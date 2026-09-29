@@ -47,9 +47,11 @@ RegressionPipeline_hstack1024_FS/
     CONTRACT.json
     MANIFEST.json
   kaggle_notebooks/                   # run-all + 8 individual notebooks
+    OOD-Regression/                   # 9 pipeline + kNN OOD continuations
   tests/
   build_materials.py
   build_kaggle_notebooks.py
+  build_ood_kaggle_notebooks.py
   run_all.py
 ```
 
@@ -64,12 +66,13 @@ pull repository นี้เพื่อใช้ source และ FS materials.
 ```bash
 python standard_pipeline/RegressionPipeline_hstack1024_FS/build_materials.py
 python standard_pipeline/RegressionPipeline_hstack1024_FS/build_kaggle_notebooks.py
+python standard_pipeline/RegressionPipeline_hstack1024_FS/build_ood_kaggle_notebooks.py
 python -m unittest discover \
   -s standard_pipeline/RegressionPipeline_hstack1024_FS/tests \
   -p 'test_*.py' -v
 ```
 
-หลังแก้ runtime ต้องรัน builder ทั้งสองตัวใหม่; tests จะ reject materials หรือ
+หลังแก้ runtime ต้องรัน builder ทั้งสามตัวใหม่; tests จะ reject materials หรือ
 notebook ที่ stale จาก source ปัจจุบัน.
 
 ## Local entry points
@@ -108,6 +111,31 @@ Notebook `00` รันครบ 8 variants โดย extract แต่ละ da
 fresh extraction เดียวกันกับ selector สองแบบที่ frozen แยกกัน Notebook `01`–`08`
 รันแยกราย variant.
 
+### OOD Regression continuations
+
+โฟลเดอร์ [`kaggle_notebooks/OOD-Regression`](kaggle_notebooks/OOD-Regression)
+มี production notebooks ครบ 9 ไฟล์ซึ่งไม่รัน reference gate โดยอ่านสารใหม่จาก
+`/kaggle/input/datasets/manaschaiaonon/hstack1024-pipeline-libs/cleaned_Casestudy.csv`
+และวิเคราะห์ applicability domain ตาม `standard_pipeline/OOD_ajPle/Readme.rtf`:
+
+- เปรียบเทียบ raw-derived training กับสารใหม่ใน frozen-MinMax-scaled HStack1024
+  ก่อน SelectKBest เพื่อคง feature dimension ที่ 1024;
+- ใช้ kNN mean distance และ threshold = training mean + `0.5 × SD`;
+- รายงานทุกค่า `k=3, 4, ..., 25` พร้อมป้าย `IND`/`OOD`; และ
+- รายงาน frozen-model `Predicted_pIC50` และ IND coverage โดยไม่มี historical
+  metric comparison.
+
+ไฟล์ query ปัจจุบันมีเพียง `ID,Smiles` จึงไม่มี ground truth สำหรับคำนวณ
+R²/RMSE/MAE. OOD production notebooks ไม่ใช้ reproduce-00 outputs,
+reference CSV หรือ reference workbook.
+
+สำหรับ OOD production notebooks ให้ attach เพียง
+`manaschaiaonon/hstack1024-pipeline-libs` และ `plenoi/ar-er-gr-pr`; ไม่ต้อง attach
+AR/ER/GR/PR reproduce-00 outputs ทั้งสี่ชุด.
+
+การ `fit` ในส่วนนี้จำกัดเฉพาะ neighbour index เพื่อวัด domain เท่านั้น ไม่มีการ
+fit ใหม่สำหรับ MinMaxScaler, SelectKBest หรือ final Ridge/ElasticNet model.
+
 ## Output contract
 
 แต่ละ variant เขียนภายใต้ `<output_root>/<DATASET>/<METHOD>/`:
@@ -124,6 +152,18 @@ run_manifest.json
 ```
 
 Run-all เพิ่ม aggregate `reference_verification.csv` และ `.json` ที่ output root.
+
+OOD notebooks เขียนไฟล์ต่อ variant ภายใต้ `<output_root>/<DATASET>/<METHOD>/`:
+
+```text
+production_predictions_ood.csv
+ood_summary_k3_k25.csv
+production_manifest.json
+```
+
+และสร้าง `ood_coverage_diagnostics.png` กับ aggregate OOD summary ที่ output
+root. รายละเอียด protocol อยู่ใน
+[`kaggle_notebooks/OOD-Regression/README.md`](kaggle_notebooks/OOD-Regression/README.md).
 
 ## Validation status
 

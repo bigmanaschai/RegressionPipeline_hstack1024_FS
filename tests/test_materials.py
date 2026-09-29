@@ -42,6 +42,18 @@ class MaterialBundleTest(unittest.TestCase):
             self.assertTrue(target.is_file())
             self.assertEqual(builder.sha256(target), metadata["sha256"])
 
+    def test_material_contract_records_optional_ood_protocol(self):
+        builder = load_builder()
+        contract = json.loads(
+            (builder.DESTINATION / "CONTRACT.json").read_text(encoding="utf-8")
+        )
+        ood = contract["optional_post_analysis"]
+        self.assertEqual(ood["feature_dimension"], 1024)
+        self.assertEqual(ood["k_values"], list(range(3, 26)))
+        self.assertFalse(ood["historical_reference_comparison_performed"])
+        self.assertFalse(ood["split_oracle_used"])
+        self.assertFalse(ood["regression_model_refitted"])
+
     def test_vendored_base_resolves_flat_kaggle_artifact_layout(self):
         config_path = (
             ROOT

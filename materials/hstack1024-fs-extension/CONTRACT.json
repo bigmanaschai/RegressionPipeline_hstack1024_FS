@@ -9,6 +9,42 @@
     "metric": "Test_R2",
     "absolute_tolerance": 0.001
   },
+  "optional_post_analysis": {
+    "name": "production new-compound regression and kNN applicability domain",
+    "protocol_source": "standard_pipeline/OOD_ajPle/Readme.rtf",
+    "default_query": "/kaggle/input/datasets/manaschaiaonon/hstack1024-pipeline-libs/cleaned_Casestudy.csv",
+    "feature_space": "frozen-MinMax-scaled HStack1024 before SelectKBest",
+    "feature_dimension": 1024,
+    "k_values": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25
+    ],
+    "threshold": "training mean kNN distance + 0.5 * training SD",
+    "historical_reference_comparison_performed": false,
+    "split_oracle_used": false,
+    "regression_model_refitted": false
+  },
   "variants": [
     {
       "dataset": "AR",

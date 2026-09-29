@@ -204,6 +204,21 @@ def contract_payload() -> dict:
         "precomputed_features_included": False,
         "inference_device": "cpu",
         "quality_gate": {"metric": "Test_R2", "absolute_tolerance": 0.001},
+        "optional_post_analysis": {
+            "name": "production new-compound regression and kNN applicability domain",
+            "protocol_source": "standard_pipeline/OOD_ajPle/Readme.rtf",
+            "default_query": (
+                "/kaggle/input/datasets/manaschaiaonon/"
+                "hstack1024-pipeline-libs/cleaned_Casestudy.csv"
+            ),
+            "feature_space": "frozen-MinMax-scaled HStack1024 before SelectKBest",
+            "feature_dimension": 1024,
+            "k_values": list(range(3, 26)),
+            "threshold": "training mean kNN distance + 0.5 * training SD",
+            "historical_reference_comparison_performed": False,
+            "split_oracle_used": False,
+            "regression_model_refitted": False,
+        },
         "variants": [
             {
                 "dataset": spec.dataset,
@@ -272,11 +287,13 @@ def build() -> None:
     )
     (DESTINATION / "README.txt").write_text(
         "HStack1024 SelectKBest extension materials (8 frozen final pipelines).\n"
-        "Contains: exact base/FS runtime source, 8 frozen final bundles, 8 reference tables.\n"
+        "Contains: exact base/FS/OOD runtime source, 8 frozen final bundles, 8 reference tables.\n"
         "Does not contain precomputed sample features or the 4.1 GB deep-feature assets.\n"
-        "Kaggle also requires manaschaiaonon/hstack1024-pipeline-libs, raw AR/ER/GR/PR "
-        "CSV input, and the four reproduce-00 split-oracle outputs.\n"
-        "CPU inference only; no selector, scaler, or estimator training/refitting occurs.\n",
+        "Standard replay requires the base library, raw AR/ER/GR/PR CSV input, "
+        "and the four reproduce-00 split-oracle outputs.\n"
+        "CPU inference only; no selector, scaler, or estimator training/refitting occurs.\n"
+        "Production OOD reads cleaned_Casestudy.csv, fits only a kNN domain index, "
+        "and reports k=3..25 without historical reference replay or split oracles.\n",
         encoding="utf-8",
     )
 
