@@ -133,7 +133,7 @@ def component_descriptor(spec) -> dict:
 
 
 def patched_base_config() -> bytes:
-    """Make Kaggle artifact detection independent of optional source metadata."""
+    """Recognize Kaggle's base bundle from its required checkpoint directory."""
     source = (BASE_SRC / "hstack1024_pipeline" / "config.py").read_text(
         encoding="utf-8"
     )
@@ -142,10 +142,7 @@ def patched_base_config() -> bytes:
         and (root / \"src\" / \"hstack1024_pipeline\").is_dir()
     )
 """
-    new = """    return all(
-        (root / directory).is_dir()
-        for directory in (\"checkpoints\", \"models\", \"transformers\")
-    )
+    new = """    return (root / \"checkpoints\").is_dir()
 """
     if source.count(old) != 1:
         raise AssertionError("Unexpected base config: flat-bundle detector changed")

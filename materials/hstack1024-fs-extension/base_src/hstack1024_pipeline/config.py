@@ -104,10 +104,7 @@ def is_flat_kaggle_bundle(repo_root: Optional[Path]) -> bool:
     if repo_root is None:
         return False
     root = Path(repo_root)
-    return all(
-        (root / directory).is_dir()
-        for directory in ("checkpoints", "models", "transformers")
-    )
+    return (root / "checkpoints").is_dir()
 
 
 def baseline_workbook(repo_root: Optional[Path] = None) -> Path:

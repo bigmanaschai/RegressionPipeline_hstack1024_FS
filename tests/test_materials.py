@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -88,6 +89,15 @@ class MaterialBundleTest(unittest.TestCase):
             ridge = config.ridge_path(dataset, base_root)
             self.assertEqual(ridge, base_root / "models" / f"{dataset}_Ridge.pkl")
             self.assertTrue(ridge.is_file())
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            checkpoints_only = Path(temp_dir)
+            (checkpoints_only / "checkpoints").mkdir()
+            self.assertTrue(config.is_flat_kaggle_bundle(checkpoints_only))
+            self.assertEqual(
+                config.checkpoint_path("AR", "smiles", checkpoints_only),
+                checkpoints_only / "checkpoints" / "model_smiles_AR.pt",
+            )
 
 
 if __name__ == "__main__":

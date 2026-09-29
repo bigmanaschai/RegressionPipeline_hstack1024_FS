@@ -48,6 +48,41 @@ class KaggleNotebookTest(unittest.TestCase):
             (checkout / "pyproject.toml").touch()
             self.assertEqual(namespace["find_extension_root"](checkout), checkout)
 
+    def test_base_artifact_root_detection_accepts_nested_kaggle_upload(self):
+        notebook = load_builder().notebook("AR", "pearson")
+        resolver_source = next(
+            "".join(cell["source"])
+            for cell in notebook["cells"]
+            if cell["cell_type"] == "code"
+            and "def find_base_artifact_root" in "".join(cell["source"])
+        )
+        module = ast.parse(resolver_source)
+        resolver_function = next(
+            node
+            for node in module.body
+            if isinstance(node, ast.FunctionDef)
+            and node.name == "find_base_artifact_root"
+        )
+        namespace = {"Path": Path}
+        exec(
+            compile(
+                ast.Module(body=[resolver_function], type_ignores=[]),
+                "base_resolver",
+                "exec",
+            ),
+            namespace,
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            mount = Path(temp_dir)
+            nested = mount / "uploaded-folder"
+            checkpoint = nested / "checkpoints" / "model_smiles_AR.pt"
+            checkpoint.parent.mkdir(parents=True)
+            checkpoint.touch()
+            self.assertEqual(
+                namespace["find_base_artifact_root"](mount), nested.resolve()
+            )
+
     def test_nine_notebooks_are_current_and_compile(self):
         rendered = load_builder().rendered_notebooks()
         self.assertEqual(len(rendered), 9)
@@ -72,6 +107,8 @@ class KaggleNotebookTest(unittest.TestCase):
                 self.assertIn("manaschaiaonon/hstack1024-pipeline-libs", source)
                 self.assertIn("del sys.modules[module_name]", source)
                 self.assertIn("expected_imports", source)
+                self.assertIn('print("Base config    :", base_config.__file__)', source)
+                self.assertIn('print("Flat bundle    :", base_config.is_flat_kaggle_bundle(BASE_ROOT))', source)
                 self.assertIn('getattr(hstack1024_pipeline, "PIPELINE_CONTRACT_VERSION", None)', source)
                 self.assertIn('feature_source="extract"', source)
                 self.assertIn('print("Inference device: CPU")', source)

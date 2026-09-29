@@ -128,8 +128,8 @@
       "bytes": 3268
     },
     "base_src/hstack1024_pipeline/config.py": {
-      "sha256": "6cb86b49a199592b81d564195f3ad09f0964a49d8ffd74139cc5ae83c7e7762d",
-      "bytes": 7008
+      "sha256": "cc65955e038bb62763a1162bb1c9224f2fbe62853c6476aad3ffa8c68c4d2361",
+      "bytes": 6926
     },
     "models/AR_pearson_bundle.json": {
       "sha256": "4f64faa12fd11d4e92602037d3ad6213b9f3f1bc1338601aae92b7d0c0e9946d",

@@ -198,9 +198,26 @@ import sys
 
 BASE_KAGGLE_ROOT = Path("/kaggle/input/datasets/manaschaiaonon/hstack1024-pipeline-libs")
 LOCAL_BASE_ROOT = PROJECT_ROOT / "standard_pipeline/frozen_hstack1024_ridge/kaggle_dataset/hstack1024-pipeline-libs"
-BASE_ROOT = Path(BASE_ROOT_OVERRIDE).expanduser() if BASE_ROOT_OVERRIDE else (
+BASE_ROOT_CANDIDATE = Path(BASE_ROOT_OVERRIDE).expanduser() if BASE_ROOT_OVERRIDE else (
     BASE_KAGGLE_ROOT if BASE_KAGGLE_ROOT.is_dir() else LOCAL_BASE_ROOT
 )
+
+def find_base_artifact_root(candidate):
+    """Accept direct or one-level/nested Kaggle uploads of the flat bundle."""
+    candidate = Path(candidate)
+    direct = candidate / "checkpoints" / "model_smiles_AR.pt"
+    if direct.is_file():
+        return candidate
+    roots = sorted({
+        path.parent.parent.resolve()
+        for path in candidate.rglob("model_smiles_AR.pt")
+        if path.parent.name == "checkpoints"
+    })
+    if len(roots) == 1:
+        return roots[0]
+    return candidate
+
+BASE_ROOT = find_base_artifact_root(BASE_ROOT_CANDIDATE)
 FS_ROOT = Path(FS_ROOT_OVERRIDE).expanduser() if FS_ROOT_OVERRIDE else (
     EXTENSION_ROOT / "materials/hstack1024-fs-extension"
 )
@@ -249,6 +266,17 @@ for package_name, (package, expected_dir) in expected_imports.items():
         raise RuntimeError(
             f"Imported {package_name} from {imported_file!r}; expected {expected_dir}"
         )
+
+base_config = importlib.import_module("hstack1024_pipeline.config")
+print("Base config    :", base_config.__file__)
+print(
+    "Artifact dirs :",
+    {
+        directory: (BASE_ROOT / directory).is_dir()
+        for directory in ("checkpoints", "models", "transformers")
+    },
+)
+print("Flat bundle    :", base_config.is_flat_kaggle_bundle(BASE_ROOT))
 
 base_contract = getattr(hstack1024_pipeline, "PIPELINE_CONTRACT_VERSION", None)
 if base_contract != "fresh-raw-split-extraction-cpu-v2":
