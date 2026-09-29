@@ -23,6 +23,9 @@ class VariantSpec:
     model_class: str
     selected_k: int
     model_params: dict[str, float]
+    reference_sheet: str
+    reference_test_r2: float
+    selection_rule: str = "Choose_Method == TRUE"
 
     @property
     def variant_id(self) -> str:
@@ -40,13 +43,15 @@ _SPECS = (
         "results-arergrpr-ar-hstack1024-selectkbest-mutualinfo-minm",
         "hstack_regression_AR_selectkbest_mutualinfo.csv",
         "ElasticNet", 30, {"alpha": 0.01, "l1_ratio": 0.1},
+        "AR_selectkbest_mutualinfo", 0.605790202425591,
     ),
     VariantSpec(
         "AR", "pearson",
         "arergrpr-ar-hstack1024-kbest-corr-pearson-min",
         "results-arergrpr-ar-hstack1024-kbest-corr-pearson-min",
         "hstack_regression_AR_selectkbest_correlation.csv",
-        "Ridge", 35, {"alpha": 1.0},
+        "Ridge", 25, {"alpha": 1.0},
+        "AR_selectkbest_correlation", 0.621969056290390,
     ),
     VariantSpec(
         "ER", "mutual_info",
@@ -54,6 +59,7 @@ _SPECS = (
         "results-arergrpr-er-hstack1024-selectkbest-mutualinfo-minm",
         "hstack_regression_ER_selectkbest_mutualinfo.csv",
         "Ridge", 35, {"alpha": 10.0},
+        "ER_selectkbest_mutualinfo", 0.769493031166217,
     ),
     VariantSpec(
         "ER", "pearson",
@@ -61,6 +67,7 @@ _SPECS = (
         "results-arergrpr-er-hstack1024-kbest-corr-pearson-min",
         "hstack_regression_ER_selectkbest_correlation.csv",
         "ElasticNet", 30, {"alpha": 0.01, "l1_ratio": 0.1},
+        "ER_selectkbest_correlation", 0.768635542381417,
     ),
     VariantSpec(
         "GR", "mutual_info",
@@ -68,6 +75,7 @@ _SPECS = (
         "results-arergrpr-gr-hstack1024-selectkbest-mutuali",
         "hstack_regression_GR_selectkbest_mutualinfo.csv",
         "ElasticNet", 30, {"alpha": 0.001, "l1_ratio": 0.1},
+        "GR_selectkbest_mutualinfo", 0.589149117475332,
     ),
     VariantSpec(
         "GR", "pearson",
@@ -75,6 +83,7 @@ _SPECS = (
         "results-arergrpr-gr-hstack1024-kbest-corr-pearson",
         "hstack_regression_GR_selectkbest_correlation.csv",
         "Ridge", 30, {"alpha": 10.0},
+        "GR_selectkbest_correlation", 0.519489428395004,
     ),
     VariantSpec(
         "PR", "mutual_info",
@@ -82,6 +91,7 @@ _SPECS = (
         "results-arergrpr-pr-hstack1024-selectkbest-mutuali",
         "hstack_regression_PR_selectkbest_mutualinfo.csv",
         "ElasticNet", 25, {"alpha": 0.01, "l1_ratio": 0.1},
+        "PR_selectkbest_mutualinfo", 0.706200850113676,
     ),
     VariantSpec(
         "PR", "pearson",
@@ -89,6 +99,8 @@ _SPECS = (
         "results-arergrpr-pr-hstack1024-kbest-corr-pearson",
         "hstack_regression_PR_selectkbest_correlation.csv",
         "Ridge", 25, {"alpha": 10.0},
+        "PR_selectkbest_correlation", 0.705562571628553,
+        "highest CVR2 (source sheet has no Choose_Method column)",
     ),
 )
 
@@ -157,9 +169,15 @@ def bundle_path(
 ) -> Path:
     spec = get_variant(dataset, method)
     if is_material_bundle(fs_root):
+        descriptor = Path(fs_root) / "models" / f"{spec.variant_id}_bundle.json"
+        if descriptor.is_file():
+            return descriptor
         return Path(fs_root) / "models" / f"{spec.variant_id}_best_model.pkl"
     local_material = default_material_root(repo_root)
     if is_material_bundle(local_material):
+        descriptor = local_material / "models" / f"{spec.variant_id}_bundle.json"
+        if descriptor.is_file():
+            return descriptor
         return local_material / "models" / f"{spec.variant_id}_best_model.pkl"
     return original_result_dir(dataset, method, repo_root) / spec.bundle_filename
 

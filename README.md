@@ -5,13 +5,16 @@
 
 | Dataset | `mutual_info` | `pearson` |
 |---|---|---|
-| AR | ElasticNet, k=30 | Ridge, k=35 |
+| AR | ElasticNet, k=30 | Ridge, k=25 |
 | ER | Ridge, k=35 | ElasticNet, k=30 |
 | GR | ElasticNet, k=30 | Ridge, k=30 |
 | PR | ElasticNet, k=25 | Ridge, k=25 |
 
-ค่า model, parameter, scaler, selector, selected indices และ k มาจาก frozen
-`best_model_<DATASET>.pkl` ของ experiment ที่ผู้ใช้ระบุ ไม่ได้เลือกหรือ train ใหม่
+ค่า model, parameter, scaler, selector, selected indices และ k มาจาก sheet ที่ตรงกับ
+แต่ละ variant ใน `arergrpr-HStack1024 Feature Selection.xlsx` โดยเลือกแถว
+`Choose_Method == TRUE` ไม่ได้เลือกหรือ train ใหม่ สำหรับ PR–pearson ซึ่ง source
+sheet ไม่มีคอลัมน์ดังกล่าว ใช้แถว CVR2 อันดับ 1 (`Ridge`, k=25) ซึ่งตรงกับ frozen
+`best_model_PR.pkl` เดิม
 
 ## Scientific execution contract
 

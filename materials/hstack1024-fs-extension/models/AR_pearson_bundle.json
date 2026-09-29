@@ -1,0 +1,32 @@
+{
+  "format": "frozen_component_bundle_v1",
+  "components": {
+    "model": "AR_pearson_model.pkl",
+    "selector": "AR_pearson_selector.pkl",
+    "normalizer": "AR_pearson_normalizer.pkl"
+  },
+  "metadata": {
+    "dataset": "AR",
+    "model_name": "Ridge",
+    "FS_Method": "pearson",
+    "FS_k": 25,
+    "selector_type": "correlation_pearson",
+    "selected_features": "[0, 9, 13, 22, 45, 80, 88, 107, 115, 130, 157, 169, 180, 185, 204, 206, 209, 222, 369, 375, 437, 495, 776, 941, 981]",
+    "feature_order": [
+      "smiles",
+      "selfies",
+      "graph",
+      "fingerprint"
+    ],
+    "feat_dim": 1024,
+    "selected_by": "arergrpr-HStack1024 Feature Selection.xlsx/AR_selectkbest_correlation: Choose_Method == TRUE",
+    "best_params": "{'alpha': 1.0}",
+    "CVR2": 0.5951511321742358,
+    "CVRMSE": 0.6262915738070712,
+    "CVMAE": 0.46493257697999785,
+    "TSR2": 0.6219690562903901,
+    "TSRMSE": 0.6183814406394958,
+    "TSMAE": 0.4820290207862854,
+    "sklearn_version": "1.2.2"
+  }
+}

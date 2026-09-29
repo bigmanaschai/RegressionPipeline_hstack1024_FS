@@ -9,10 +9,11 @@ split, and extraction contract.
 | Raw datasets | `standard_pipeline/the_best_method_for_pipeline/AR_ER_GR_PR/` | Execution source |
 | Split code/oracles | `standard_pipeline/the_best_method_for_pipeline/reproduce-00-datasplit/` and Kaggle reproduce-00 outputs | Oracle-only validation |
 | Deep extractors/checkpoints | frozen `hstack1024_ridge` base package/library | Fresh feature execution |
-| Normalizer | embedded in each final `best_model_*.pkl` | Frozen transform only |
-| SelectKBest | embedded in each final `best_model_*.pkl` | Frozen transform only |
-| Final predictor | embedded in each final `best_model_*.pkl` | Frozen inference only |
-| Evaluation/reference | eight supplied experiment CSVs | Unique dataset/method/model/k row |
+| Final selection | `arergrpr-HStack1024 Feature Selection.xlsx`, eight matching sheets | `Choose_Method == TRUE` row |
+| Normalizer | frozen selected-variant component or bundle | Frozen transform only |
+| SelectKBest | frozen selected-variant component or bundle | Frozen transform only |
+| Final predictor | frozen selected-variant component or bundle | Frozen inference only |
+| Evaluation/reference | eight supplied experiment CSVs | Workbook-designated dataset/method/model/k row |
 | Runtime | notebook metadata and serialized sklearn version | Python 3.10, sklearn 1.2.2, CPU |
 
 The source folder names, selected k, final model class/parameters, and artifact
@@ -28,3 +29,8 @@ ER-specific. The user's explicit ER path mapping resolves this copy/paste label.
 The runtime preserves the source label in each manifest, identifies the row by
 `Model + FS_Method + FS_k`, and separately requires the ER bundle identity and
 ER row-count contract. No source CSV is rewritten.
+
+The `PR_selectkbest_correlation` workbook sheet does not contain a
+`Choose_Method` column. Its top CVR2 row is `Ridge`, k=25 and matches the
+supplied frozen `best_model_PR.pkl`; this exception is recorded in
+`materials/hstack1024-fs-extension/SELECTIONS.json`.

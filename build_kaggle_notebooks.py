@@ -56,6 +56,11 @@ within absolute tolerance 0.001.
 
 Run target: **{title}**
 
+Final `Model`, `FS_k`, and reference metrics follow the matching sheet in
+`arergrpr-HStack1024 Feature Selection.xlsx`. The designated row is
+`Choose_Method == TRUE`; the source `PR_selectkbest_correlation` sheet lacks
+that column, so its top-CVR2 frozen row (`Ridge`, k=25) is recorded explicitly.
+
 | Step | Stage | Input | Process | Output |
 |---:|---|---|---|---|
 | 1 | Source | GitHub repository/ref | Clone the immutable standard-pipeline source and small FS materials | Versioned runtime package |
@@ -66,7 +71,7 @@ Run target: **{title}**
 | 6 | Deep extraction | Validation/Test SMILES + frozen checkpoints | Fresh CPU SMILES, SELFIES, Graph, and Fingerprint inference | Four aligned 256-d families |
 | 7 | Integration | Four feature families | Fixed-order `smiles → selfies → graph → fingerprint` concatenation | HStack1024 |
 | 8 | Normalization | HStack1024 + frozen scaler | Transform only | Scaled 1024-d features |
-| 9 | Selection | Scaled features + frozen SelectKBest | Apply frozen `mutual_info` or `pearson` support | k=25/30/35 features |
+| 9 | Selection | Workbook-designated frozen SelectKBest | Apply selected `mutual_info` or `pearson` support | Chosen FS_k features |
 | 10 | Prediction | Selected features + frozen final regressor | Frozen Ridge/ElasticNet inference | Test predictions |
 | 11 | Acceptance | Predictions + variant reference CSV | Require `abs(Test_R2 − reference) ≤ 0.001` | PASS/FAIL, metrics, manifest, features |
 
@@ -267,7 +272,7 @@ print("Inference device: CPU")
             '''# Preflight raw, split-oracle, deep-model, final-model, and reference inputs.
 from hstack1024_pipeline.config import DATASETS, FAMILY_ORDER, checkpoint_path, fingerprint_transformer_path, raw_csv_path
 from hstack1024_fs_pipeline.cli import discover_split_paths
-from hstack1024_fs_pipeline.config import FS_METHODS, bundle_path, reference_path
+from hstack1024_fs_pipeline.config import FS_METHODS, bundle_path, get_variant, reference_path
 
 datasets = tuple(DATASETS) if RUN_DATASET == "ALL" else (RUN_DATASET,)
 methods = FS_METHODS if RUN_METHOD == "ALL" else (RUN_METHOD,)
@@ -284,10 +289,17 @@ for dataset in datasets:
     if not fingerprint_transformer_path(dataset, BASE_ROOT).is_file():
         raise FileNotFoundError(fingerprint_transformer_path(dataset, BASE_ROOT))
     for method in methods:
+        spec = get_variant(dataset, method)
         if not bundle_path(dataset, method, fs_root=FS_ROOT).is_file():
             raise FileNotFoundError(bundle_path(dataset, method, fs_root=FS_ROOT))
         if not reference_path(dataset, method, fs_root=FS_ROOT).is_file():
             raise FileNotFoundError(reference_path(dataset, method, fs_root=FS_ROOT))
+        print(
+            "Selected variant:", spec.variant_id,
+            f"Model={spec.model_class}", f"FS_k={spec.selected_k}",
+            f"Reference_Test_R2={spec.reference_test_r2:.12f}",
+            f"Sheet={spec.reference_sheet}", f"Rule={spec.selection_rule}",
+        )
 print("Preflight: OK", datasets, methods)
 '''
         ),

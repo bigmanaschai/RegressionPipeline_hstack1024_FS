@@ -36,6 +36,21 @@ class FrozenFeatureSelectionContractTest(unittest.TestCase):
         self.assertEqual(FS_METHODS, ("mutual_info", "pearson"))
         self.assertEqual(len(VARIANTS), 8)
         self.assertEqual(len(all_variants()), 8)
+        expected = {
+            ("AR", "mutual_info"): ("ElasticNet", 30, 0.605790202425591),
+            ("AR", "pearson"): ("Ridge", 25, 0.621969056290390),
+            ("ER", "mutual_info"): ("Ridge", 35, 0.769493031166217),
+            ("ER", "pearson"): ("ElasticNet", 30, 0.768635542381417),
+            ("GR", "mutual_info"): ("ElasticNet", 30, 0.589149117475332),
+            ("GR", "pearson"): ("Ridge", 30, 0.519489428395004),
+            ("PR", "mutual_info"): ("ElasticNet", 25, 0.706200850113676),
+            ("PR", "pearson"): ("Ridge", 25, 0.705562571628553),
+        }
+        for key, (model, selected_k, test_r2) in expected.items():
+            spec = VARIANTS[key]
+            self.assertEqual(spec.model_class, model)
+            self.assertEqual(spec.selected_k, selected_k)
+            self.assertAlmostEqual(spec.reference_test_r2, test_r2, places=12)
 
     def test_runtime_contains_no_estimator_fitting_call(self):
         source = inspect.getsource(pipeline_module) + inspect.getsource(artifacts_module)

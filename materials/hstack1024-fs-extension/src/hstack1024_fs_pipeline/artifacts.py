@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+import json
 import sys
 import warnings
 from contextlib import contextmanager
@@ -44,9 +45,24 @@ def _historical_pickle_symbols():
 
 
 def load_frozen_bundle(path: Path) -> dict:
+    path = Path(path)
     with _historical_pickle_symbols(), warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        payload = joblib.load(path)
+        if path.suffix.lower() == ".json":
+            descriptor = json.loads(path.read_text(encoding="utf-8"))
+            if descriptor.get("format") != "frozen_component_bundle_v1":
+                raise AssertionError(f"{path}: unsupported component-bundle format")
+            components = descriptor["components"]
+            payload = dict(descriptor["metadata"])
+            payload.update(
+                {
+                    "model": joblib.load(path.parent / components["model"]),
+                    "normalizer": joblib.load(path.parent / components["normalizer"]),
+                    "selector": joblib.load(path.parent / components["selector"]),
+                }
+            )
+        else:
+            payload = joblib.load(path)
     required = {
         "dataset",
         "model_name",
@@ -87,6 +103,13 @@ def load_reference_row(path: Path, spec: VariantSpec, bundle: dict) -> dict:
         )
     row = selected.iloc[0].to_dict()
     row["Source_Dataset_Label"] = str(row["Dataset"])
+    if not np.isclose(
+        float(row["TSR2"]), spec.reference_test_r2, rtol=0.0, atol=1e-12
+    ):
+        raise AssertionError(
+            f"{path}: {spec.variant_id} reference TSR2 does not match "
+            f"{spec.reference_sheet}/{spec.selection_rule}"
+        )
     return row
 
 

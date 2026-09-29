@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
 import json
 import shutil
@@ -33,13 +34,130 @@ def artifact_sources() -> dict[Path, Path]:
     files: dict[Path, Path] = {}
     for spec in all_variants():
         result = original_result_dir(spec.dataset, spec.method, REPO_ROOT)
-        files[Path("models") / f"{spec.variant_id}_best_model.pkl"] = (
-            result / spec.bundle_filename
-        )
         files[Path("references") / f"{spec.variant_id}_reference.csv"] = (
             result / spec.reference_filename
         )
+        if spec.variant_id == "AR_pearson":
+            for role, source in component_sources(spec).items():
+                files[Path("models") / f"{spec.variant_id}_{role}.pkl"] = source
+        else:
+            files[Path("models") / f"{spec.variant_id}_best_model.pkl"] = (
+                result / spec.bundle_filename
+            )
     return files
+
+
+def component_sources(spec) -> dict[str, Path]:
+    model_root = original_result_dir(
+        spec.dataset, spec.method, REPO_ROOT
+    ) / "models"
+    if spec.method == "mutual_info":
+        model_name = f"{spec.dataset}_{spec.model_class}_k{spec.selected_k}.pkl"
+        selector_name = (
+            f"{spec.dataset}_selectkbest_mutualinfo_k{spec.selected_k}.pkl"
+        )
+    else:
+        model_name = (
+            f"{spec.dataset}_{spec.model_class}_pearson_k{spec.selected_k}.pkl"
+        )
+        selector_name = (
+            f"{spec.dataset}_selectkbest_correlation_pearson_k{spec.selected_k}.pkl"
+        )
+    sources = {
+        "model": model_root / model_name,
+        "selector": model_root / selector_name,
+        "normalizer": model_root / f"{spec.dataset}_normalizer_minmax.pkl",
+    }
+    missing = [str(path) for path in sources.values() if not path.is_file()]
+    if missing:
+        raise FileNotFoundError(f"Missing frozen component(s): {missing}")
+    return sources
+
+
+def selected_reference_row(spec) -> dict[str, str]:
+    path = original_result_dir(
+        spec.dataset, spec.method, REPO_ROOT
+    ) / spec.reference_filename
+    with path.open("r", encoding="utf-8", newline="") as stream:
+        rows = list(csv.DictReader(stream))
+    selected = [
+        row
+        for row in rows
+        if row["Model"] == spec.model_class
+        and row["FS_Method"] == spec.method
+        and int(row["FS_k"]) == spec.selected_k
+    ]
+    if len(selected) != 1:
+        raise AssertionError(
+            f"{path}: expected one row for {spec.variant_id}, found {len(selected)}"
+        )
+    row = selected[0]
+    if abs(float(row["TSR2"]) - spec.reference_test_r2) > 1e-12:
+        raise AssertionError(
+            f"{path}: TSR2 differs from {spec.reference_sheet}/{spec.selection_rule}"
+        )
+    return row
+
+
+def component_descriptor(spec) -> dict:
+    row = selected_reference_row(spec)
+    return {
+        "format": "frozen_component_bundle_v1",
+        "components": {
+            role: f"{spec.variant_id}_{role}.pkl"
+            for role in ("model", "selector", "normalizer")
+        },
+        "metadata": {
+            "dataset": spec.dataset,
+            "model_name": spec.model_class,
+            "FS_Method": spec.method,
+            "FS_k": spec.selected_k,
+            "selector_type": "correlation_pearson",
+            "selected_features": row["Selected_Features"],
+            "feature_order": ["smiles", "selfies", "graph", "fingerprint"],
+            "feat_dim": 1024,
+            "selected_by": (
+                "arergrpr-HStack1024 Feature Selection.xlsx/"
+                f"{spec.reference_sheet}: {spec.selection_rule}"
+            ),
+            "best_params": row["Best_Params"],
+            "CVR2": float(row["CVR2"]),
+            "CVRMSE": float(row["CVRMSE"]),
+            "CVMAE": float(row["CVMAE"]),
+            "TSR2": float(row["TSR2"]),
+            "TSRMSE": float(row["TSRMSE"]),
+            "TSMAE": float(row["TSMAE"]),
+            "sklearn_version": "1.2.2",
+        },
+    }
+
+
+def generated_materials() -> dict[Path, bytes]:
+    ar_pearson = next(spec for spec in all_variants() if spec.variant_id == "AR_pearson")
+    selections = {
+        "source_workbook": "arergrpr-HStack1024 Feature Selection.xlsx",
+        "variants": [
+            {
+                "dataset": spec.dataset,
+                "method": spec.method,
+                "sheet": spec.reference_sheet,
+                "selection_rule": spec.selection_rule,
+                "model": spec.model_class,
+                "FS_k": spec.selected_k,
+                "Reference_Test_R2": spec.reference_test_r2,
+            }
+            for spec in all_variants()
+        ],
+    }
+    return {
+        Path("models/AR_pearson_bundle.json"): (
+            json.dumps(component_descriptor(ar_pearson), indent=2, ensure_ascii=False)
+            + "\n"
+        ).encode("utf-8"),
+        Path("SELECTIONS.json"): (
+            json.dumps(selections, indent=2, ensure_ascii=False) + "\n"
+        ).encode("utf-8"),
+    }
 
 
 def source_tree_files() -> dict[Path, Path]:
@@ -75,6 +193,9 @@ def contract_payload() -> dict:
                 "selected_k": spec.selected_k,
                 "model_params": spec.model_params,
                 "source_stage": spec.source_stage,
+                "reference_sheet": spec.reference_sheet,
+                "selection_rule": spec.selection_rule,
+                "reference_test_r2": spec.reference_test_r2,
             }
             for spec in all_variants()
         ],
@@ -83,6 +204,7 @@ def contract_payload() -> dict:
 
 def expected_manifest() -> dict:
     sources = {**artifact_sources(), **source_tree_files(), **base_source_tree_files()}
+    generated = generated_materials()
     return {
         "material_slug": "hstack1024-fs-extension",
         "mode": "fresh HStack1024 extraction plus frozen SelectKBest/final-model inference",
@@ -97,6 +219,12 @@ def expected_manifest() -> dict:
                 "bytes": source.stat().st_size,
             }
             for relative, source in sources.items()
+        } | {
+            relative.as_posix(): {
+                "sha256": hashlib.sha256(content).hexdigest(),
+                "bytes": len(content),
+            }
+            for relative, content in generated.items()
         },
     }
 
@@ -108,6 +236,13 @@ def build() -> None:
         target = DESTINATION / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, target)
+    for relative, content in generated_materials().items():
+        target = DESTINATION / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(content)
+    legacy = DESTINATION / "models" / "AR_pearson_best_model.pkl"
+    if legacy.exists():
+        legacy.unlink()
     (DESTINATION / "CONTRACT.json").write_text(
         json.dumps(contract_payload(), indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
@@ -142,6 +277,8 @@ def check() -> None:
     contract = json.loads((DESTINATION / "CONTRACT.json").read_text(encoding="utf-8"))
     if contract != contract_payload():
         raise SystemExit("CONTRACT.json is stale")
+    if (DESTINATION / "models" / "AR_pearson_best_model.pkl").exists():
+        raise SystemExit("Stale AR_pearson best_model bundle must be removed")
     print("HStack1024 FS materials are complete and current")
 
 

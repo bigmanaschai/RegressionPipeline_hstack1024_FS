@@ -20,11 +20,17 @@ from hstack1024_fs_pipeline.artifacts import (
     predict_frozen_linear,
     validate_frozen_bundle,
 )
-from hstack1024_fs_pipeline.config import all_variants, original_result_dir
+from hstack1024_fs_pipeline.config import (
+    all_variants,
+    bundle_path,
+    original_result_dir,
+    reference_path,
+)
 from hstack1024_pipeline.metrics import regression_metrics
 
 
 REPO_ROOT = ROOT.parents[1]
+MATERIAL_ROOT = ROOT / "materials" / "hstack1024-fs-extension"
 
 
 class HistoricalFeatureOracleReplayTest(unittest.TestCase):
@@ -34,7 +40,9 @@ class HistoricalFeatureOracleReplayTest(unittest.TestCase):
         for spec in all_variants():
             with self.subTest(variant=spec.variant_id):
                 result = original_result_dir(spec.dataset, spec.method, REPO_ROOT)
-                bundle = load_frozen_bundle(result / spec.bundle_filename)
+                bundle = load_frozen_bundle(
+                    bundle_path(spec.dataset, spec.method, fs_root=MATERIAL_ROOT)
+                )
                 X_val, _ = load_svmlight_file(
                     result / "traindata.scl", zero_based=False, n_features=1024
                 )
@@ -42,7 +50,11 @@ class HistoricalFeatureOracleReplayTest(unittest.TestCase):
                     result / "testdata.scl", zero_based=False, n_features=1024
                 )
                 reference = load_reference_row(
-                    result / spec.reference_filename, spec, bundle
+                    reference_path(
+                        spec.dataset, spec.method, fs_root=MATERIAL_ROOT
+                    ),
+                    spec,
+                    bundle,
                 )
                 checks = validate_frozen_bundle(
                     spec, bundle, reference, X_val.toarray()

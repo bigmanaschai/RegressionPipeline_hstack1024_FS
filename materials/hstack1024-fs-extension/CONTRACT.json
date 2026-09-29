@@ -19,17 +19,23 @@
         "alpha": 0.01,
         "l1_ratio": 0.1
       },
-      "source_stage": "arergrpr-ar-hstack1024-selectkbest-mutualinfo-minm"
+      "source_stage": "arergrpr-ar-hstack1024-selectkbest-mutualinfo-minm",
+      "reference_sheet": "AR_selectkbest_mutualinfo",
+      "selection_rule": "Choose_Method == TRUE",
+      "reference_test_r2": 0.605790202425591
     },
     {
       "dataset": "AR",
       "method": "pearson",
       "model_class": "Ridge",
-      "selected_k": 35,
+      "selected_k": 25,
       "model_params": {
         "alpha": 1.0
       },
-      "source_stage": "arergrpr-ar-hstack1024-kbest-corr-pearson-min"
+      "source_stage": "arergrpr-ar-hstack1024-kbest-corr-pearson-min",
+      "reference_sheet": "AR_selectkbest_correlation",
+      "selection_rule": "Choose_Method == TRUE",
+      "reference_test_r2": 0.62196905629039
     },
     {
       "dataset": "ER",
@@ -39,7 +45,10 @@
       "model_params": {
         "alpha": 10.0
       },
-      "source_stage": "arergrpr-er-hstack1024-selectkbest-mutualinfo-minm"
+      "source_stage": "arergrpr-er-hstack1024-selectkbest-mutualinfo-minm",
+      "reference_sheet": "ER_selectkbest_mutualinfo",
+      "selection_rule": "Choose_Method == TRUE",
+      "reference_test_r2": 0.769493031166217
     },
     {
       "dataset": "ER",
@@ -50,7 +59,10 @@
         "alpha": 0.01,
         "l1_ratio": 0.1
       },
-      "source_stage": "arergrpr-er-hstack1024-kbest-corr-pearson-min"
+      "source_stage": "arergrpr-er-hstack1024-kbest-corr-pearson-min",
+      "reference_sheet": "ER_selectkbest_correlation",
+      "selection_rule": "Choose_Method == TRUE",
+      "reference_test_r2": 0.768635542381417
     },
     {
       "dataset": "GR",
@@ -61,7 +73,10 @@
         "alpha": 0.001,
         "l1_ratio": 0.1
       },
-      "source_stage": "arergrpr-gr-hstack1024-selectkbest-mutuali"
+      "source_stage": "arergrpr-gr-hstack1024-selectkbest-mutuali",
+      "reference_sheet": "GR_selectkbest_mutualinfo",
+      "selection_rule": "Choose_Method == TRUE",
+      "reference_test_r2": 0.589149117475332
     },
     {
       "dataset": "GR",
@@ -71,7 +86,10 @@
       "model_params": {
         "alpha": 10.0
       },
-      "source_stage": "arergrpr-gr-hstack1024-kbest-corr-pearson"
+      "source_stage": "arergrpr-gr-hstack1024-kbest-corr-pearson",
+      "reference_sheet": "GR_selectkbest_correlation",
+      "selection_rule": "Choose_Method == TRUE",
+      "reference_test_r2": 0.519489428395004
     },
     {
       "dataset": "PR",
@@ -82,7 +100,10 @@
         "alpha": 0.01,
         "l1_ratio": 0.1
       },
-      "source_stage": "arergrpr-pr-hstack1024-selectkbest-mutuali"
+      "source_stage": "arergrpr-pr-hstack1024-selectkbest-mutuali",
+      "reference_sheet": "PR_selectkbest_mutualinfo",
+      "selection_rule": "Choose_Method == TRUE",
+      "reference_test_r2": 0.706200850113676
     },
     {
       "dataset": "PR",
@@ -92,7 +113,10 @@
       "model_params": {
         "alpha": 10.0
       },
-      "source_stage": "arergrpr-pr-hstack1024-kbest-corr-pearson"
+      "source_stage": "arergrpr-pr-hstack1024-kbest-corr-pearson",
+      "reference_sheet": "PR_selectkbest_correlation",
+      "selection_rule": "highest CVR2 (source sheet has no Choose_Method column)",
+      "reference_test_r2": 0.705562571628553
     }
   ]
 }

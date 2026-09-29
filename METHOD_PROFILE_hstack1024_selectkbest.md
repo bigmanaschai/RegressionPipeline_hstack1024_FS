@@ -14,9 +14,10 @@ modify that earlier profile or its artifacts.
 
 For each dataset/method pair:
 
-1. final result CSV and `best_model_<DATASET>.pkl`;
-2. frozen SelectKBest selector and final regressor embedded in the bundle;
-3. frozen MinMaxScaler embedded in the bundle;
+1. the matching sheet in `arergrpr-HStack1024 Feature Selection.xlsx` and its
+   `Choose_Method == TRUE` row;
+2. final result CSV and frozen component artifacts for the selected Model/FS_k;
+3. frozen SelectKBest selector, final regressor, and MinMaxScaler;
 4. HStack1024 family inputs in the fixed order;
 5. the four deep feature extraction stages; and
 6. raw preprocessing plus reproduce-00 split oracle.
@@ -47,7 +48,7 @@ Each frozen family produces 256 values, concatenated in this immutable order:
 | Dataset | Method | k | Final regressor | Frozen parameters | Reference Test R² |
 |---|---|---:|---|---|---:|
 | AR | mutual_info | 30 | ElasticNet | alpha=0.01, l1_ratio=0.1 | 0.6057902024 |
-| AR | pearson | 35 | Ridge | alpha=1.0 | 0.6204177350 |
+| AR | pearson | 25 | Ridge | alpha=1.0 | 0.6219690563 |
 | ER | mutual_info | 35 | Ridge | alpha=10.0 | 0.7694930312 |
 | ER | pearson | 30 | ElasticNet | alpha=0.01, l1_ratio=0.1 | 0.7686355424 |
 | GR | mutual_info | 30 | ElasticNet | alpha=0.001, l1_ratio=0.1 | 0.5891491175 |
@@ -55,10 +56,15 @@ Each frozen family produces 256 values, concatenated in this immutable order:
 | PR | mutual_info | 25 | ElasticNet | alpha=0.01, l1_ratio=0.1 | 0.7062008501 |
 | PR | pearson | 25 | Ridge | alpha=10.0 | 0.7055625716 |
 
-These are the CV-selected final bundles from the supplied experiments. The
+These are the workbook-designated final variants from the supplied experiments. The
 pipeline does not repeat the historical model search. The historical operation
 order is frozen MinMax transform, frozen SelectKBest transform, then frozen
 regressor inference.
+
+Seven source sheets contain exactly one `Choose_Method == TRUE` row. The
+`PR_selectkbest_correlation` sheet lacks the `Choose_Method` column; its first
+CVR2-ranked row (`Ridge`, k=25) is retained and matches the supplied frozen
+`best_model_PR.pkl`.
 
 ## Evaluation and acceptance
 
