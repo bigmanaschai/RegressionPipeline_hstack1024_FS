@@ -173,6 +173,9 @@ def _evaluate_variant(
     if not structural_checks["reference_test_rows_match"]:
         raise AssertionError(f"{spec.variant_id}: reference Test row count mismatch")
     structural_checks.update(split_checks)
+    structural_checks = {
+        name: bool(passed) for name, passed in structural_checks.items()
+    }
 
     validation_scaled = apply_frozen_minmax(validation.X, bundle["normalizer"])
     test_scaled = apply_frozen_minmax(test.X, bundle["normalizer"])

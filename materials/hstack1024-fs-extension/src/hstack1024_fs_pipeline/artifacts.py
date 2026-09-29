@@ -168,6 +168,7 @@ def validate_frozen_bundle(
         checks[f"model_parameter_{name}_matches"] = np.isclose(
             float(getattr(model, name)), float(expected), rtol=0.0, atol=1e-12
         )
+    checks = {name: bool(passed) for name, passed in checks.items()}
     failed = [name for name, passed in checks.items() if not passed]
     if failed:
         raise AssertionError(f"{spec.variant_id}: frozen-artifact contract failed: {failed}")

@@ -145,8 +145,13 @@ print("Extension   :", EXTENSION_ROOT)
         code_cell(
             '''# Install only missing optional deep-inference dependencies.
 import importlib.util
+import os
 import subprocess
 import sys
+
+# These frozen inference pipelines do not use experiment tracking.
+os.environ.setdefault("WANDB_MODE", "disabled")
+os.environ.setdefault("WANDB_SILENT", "true")
 
 required_modules = {
     "transformers": "transformers==4.48.3",

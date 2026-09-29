@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import unittest
 from pathlib import Path
 import sys
@@ -47,6 +48,8 @@ class HistoricalFeatureOracleReplayTest(unittest.TestCase):
                     spec, bundle, reference, X_val.toarray()
                 )
                 self.assertTrue(all(checks.values()))
+                self.assertTrue(all(type(value) is bool for value in checks.values()))
+                json.dumps(checks)
                 scaled = apply_frozen_minmax(X_test.toarray(), bundle["normalizer"])
                 selected = apply_frozen_selector(scaled, bundle)
                 prediction = predict_frozen_linear(selected, bundle["model"])
