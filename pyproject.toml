@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "frozen-hstack1024-selectkbest"
+version = "1.0.0"
+description = "Eight frozen AR/ER/GR/PR HStack1024 SelectKBest research replay pipelines"
+requires-python = ">=3.10,<3.11"
+dependencies = [
+  "joblib==1.2.0",
+  "numpy<2",
+  "pandas",
+  "scikit-learn==1.2.2",
+  "scipy",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.scripts]
+hstack1024-fs = "hstack1024_fs_pipeline.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,95 @@
+{
+  "material_slug": "hstack1024-fs-extension",
+  "mode": "fresh HStack1024 extraction plus frozen SelectKBest/final-model inference",
+  "base_kaggle_dataset_required": "manaschaiaonon/hstack1024-pipeline-libs",
+  "training_performed": false,
+  "precomputed_features_included": false,
+  "inference_device": "cpu",
+  "variant_count": 8,
+  "files": {
+    "models/AR_mutual_info_best_model.pkl": {
+      "sha256": "35c470a7d442f17acf2a7a2daba4ee6cbe06c70df8ff44ba36e0d70f033a70be",
+      "bytes": 27463
+    },
+    "references/AR_mutual_info_reference.csv": {
+      "sha256": "1764fedfdd4a4e93a4780a9672e358dfa960624ee715ceab518ffd9e168d77f5",
+      "bytes": 23575
+    },
+    "models/AR_pearson_best_model.pkl": {
+      "sha256": "a120650689ea5bd20a4c68c3dfa80377c0736e15096f195194c2f7b5f9a17e69",
+      "bytes": 23723
+    },
+    "references/AR_pearson_reference.csv": {
+      "sha256": "55230310ce5dddbf507af501de7f5f28d17921b729b0d10bacd1ef29a4179a97",
+      "bytes": 23365
+    },
+    "models/ER_mutual_info_best_model.pkl": {
+      "sha256": "db3ea8a986df9b5d411e62979f5911bfbe8ff37cc6e94aae617b4beff915836f",
+      "bytes": 27617
+    },
+    "references/ER_mutual_info_reference.csv": {
+      "sha256": "8cc47fe0a7e02aa9d01ef752d0bed820ae377a7b8de8a9244692056e449565b1",
+      "bytes": 23798
+    },
+    "models/ER_pearson_best_model.pkl": {
+      "sha256": "ef544bd380ffa89d4eb2d1d4ec2a95c8e6a21d8b6d438e9ef58312688e6b8ad7",
+      "bytes": 23588
+    },
+    "references/ER_pearson_reference.csv": {
+      "sha256": "e693fbf2935b02fd0fee3ab65d6e460fe7f4aa0b17795cfd5f5410406c0e0af9",
+      "bytes": 23743
+    },
+    "models/GR_mutual_info_best_model.pkl": {
+      "sha256": "41237d5d688995d0c107ea83b323bd3d3cd37c92b159325e89b8ea2c0034d9f2",
+      "bytes": 27722
+    },
+    "references/GR_mutual_info_reference.csv": {
+      "sha256": "bf8d37ff957f12240e4d2b4e242fb532dc14135d9c97f473431be7416290da65",
+      "bytes": 23474
+    },
+    "models/GR_pearson_best_model.pkl": {
+      "sha256": "b5a6ae6f3ecaf1cdcd8ff129ebc4d0da8c1064a2b3f9e6b0897cf72593cac7e8",
+      "bytes": 23647
+    },
+    "references/GR_pearson_reference.csv": {
+      "sha256": "e372026a4a169e71babd9d444b0a8df9782e186516c2dcf0b41cdc2abd83274c",
+      "bytes": 23334
+    },
+    "models/PR_mutual_info_best_model.pkl": {
+      "sha256": "e4066161152efe7d28d4653068dc7d570b6146e206feab47af0ecdf8f2cc3f9e",
+      "bytes": 27710
+    },
+    "references/PR_mutual_info_reference.csv": {
+      "sha256": "255e54fc2f10c7df8d47407aa21aee0e6d3d2623e88e1e2d8fe02290204f48cb",
+      "bytes": 23518
+    },
+    "models/PR_pearson_best_model.pkl": {
+      "sha256": "c202dee25ecb2851749f1baceb3b87c644d6798813a71caa2dbdd2455486b6a2",
+      "bytes": 23650
+    },
+    "references/PR_pearson_reference.csv": {
+      "sha256": "a12617c981310b1704e5ddce2c1316e6b3a7f31f3b75b101feb8f1bf2664159c",
+      "bytes": 23658
+    },
+    "src/hstack1024_fs_pipeline/__init__.py": {
+      "sha256": "2c21fce864d7d88829bdae65c57212d64defaf354541efd34f66913842a0769e",
+      "bytes": 324
+    },
+    "src/hstack1024_fs_pipeline/artifacts.py": {
+      "sha256": "c79ff4c2a4b65fd1f5532d391124135e15e0c8c75861b878fea86a567281f374",
+      "bytes": 6728
+    },
+    "src/hstack1024_fs_pipeline/cli.py": {
+      "sha256": "4095d5202120f8641f148a8f6adad95755ba0097d979eefd4960356bc550e435",
+      "bytes": 3174
+    },
+    "src/hstack1024_fs_pipeline/config.py": {
+      "sha256": "e55552060b7ce0ee73985f3aa93cebf9358dd6332dff701fab7c200fdeadb70f",
+      "bytes": 5994
+    },
+    "src/hstack1024_fs_pipeline/pipeline.py": {
+      "sha256": "a39982514f7393287e37da0ae18be8ce5513c968d7bcfa6cd849e1a5bbd9e7d5",
+      "bytes": 15986
+    }
+  }
+}

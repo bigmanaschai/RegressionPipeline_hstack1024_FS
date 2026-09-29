@@ -1,0 +1,98 @@
+{
+  "contract_version": "fresh-raw-split-extraction-selectkbest-cpu-v1",
+  "base_contract_version": "fresh-raw-split-extraction-cpu-v2",
+  "base_kaggle_dataset": "manaschaiaonon/hstack1024-pipeline-libs",
+  "training_performed": false,
+  "precomputed_features_included": false,
+  "inference_device": "cpu",
+  "quality_gate": {
+    "metric": "Test_R2",
+    "absolute_tolerance": 0.001
+  },
+  "variants": [
+    {
+      "dataset": "AR",
+      "method": "mutual_info",
+      "model_class": "ElasticNet",
+      "selected_k": 30,
+      "model_params": {
+        "alpha": 0.01,
+        "l1_ratio": 0.1
+      },
+      "source_stage": "arergrpr-ar-hstack1024-selectkbest-mutualinfo-minm"
+    },
+    {
+      "dataset": "AR",
+      "method": "pearson",
+      "model_class": "Ridge",
+      "selected_k": 35,
+      "model_params": {
+        "alpha": 1.0
+      },
+      "source_stage": "arergrpr-ar-hstack1024-kbest-corr-pearson-min"
+    },
+    {
+      "dataset": "ER",
+      "method": "mutual_info",
+      "model_class": "Ridge",
+      "selected_k": 35,
+      "model_params": {
+        "alpha": 10.0
+      },
+      "source_stage": "arergrpr-er-hstack1024-selectkbest-mutualinfo-minm"
+    },
+    {
+      "dataset": "ER",
+      "method": "pearson",
+      "model_class": "ElasticNet",
+      "selected_k": 30,
+      "model_params": {
+        "alpha": 0.01,
+        "l1_ratio": 0.1
+      },
+      "source_stage": "arergrpr-er-hstack1024-kbest-corr-pearson-min"
+    },
+    {
+      "dataset": "GR",
+      "method": "mutual_info",
+      "model_class": "ElasticNet",
+      "selected_k": 30,
+      "model_params": {
+        "alpha": 0.001,
+        "l1_ratio": 0.1
+      },
+      "source_stage": "arergrpr-gr-hstack1024-selectkbest-mutuali"
+    },
+    {
+      "dataset": "GR",
+      "method": "pearson",
+      "model_class": "Ridge",
+      "selected_k": 30,
+      "model_params": {
+        "alpha": 10.0
+      },
+      "source_stage": "arergrpr-gr-hstack1024-kbest-corr-pearson"
+    },
+    {
+      "dataset": "PR",
+      "method": "mutual_info",
+      "model_class": "ElasticNet",
+      "selected_k": 25,
+      "model_params": {
+        "alpha": 0.01,
+        "l1_ratio": 0.1
+      },
+      "source_stage": "arergrpr-pr-hstack1024-selectkbest-mutuali"
+    },
+    {
+      "dataset": "PR",
+      "method": "pearson",
+      "model_class": "Ridge",
+      "selected_k": 25,
+      "model_params": {
+        "alpha": 10.0
+      },
+      "source_stage": "arergrpr-pr-hstack1024-kbest-corr-pearson"
+    }
+  ]
+}
