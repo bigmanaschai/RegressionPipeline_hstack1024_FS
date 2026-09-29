@@ -183,6 +183,7 @@ print("Optional dependencies: OK")
         code_cell(
             '''# Resolve packages and verify the small GitHub material bundle byte-for-byte.
 import hashlib
+import importlib
 import json
 import sys
 
@@ -213,13 +214,43 @@ for relative, metadata in manifest["files"].items():
     if not path.is_file() or sha256(path) != metadata["sha256"]:
         raise RuntimeError(f"FS material missing or stale: {relative}")
 
+for module_name in list(sys.modules):
+    if (
+        module_name == "hstack1024_pipeline"
+        or module_name.startswith("hstack1024_pipeline.")
+        or module_name == "hstack1024_fs_pipeline"
+        or module_name.startswith("hstack1024_fs_pipeline.")
+    ):
+        del sys.modules[module_name]
 sys.path[:0] = [str(FS_SRC), str(BASE_SRC)]
+importlib.invalidate_caches()
+
 import hstack1024_pipeline
 import hstack1024_fs_pipeline
-if hstack1024_pipeline.PIPELINE_CONTRACT_VERSION != "fresh-raw-split-extraction-cpu-v2":
-    raise RuntimeError("Incompatible base HStack1024 contract")
-if hstack1024_fs_pipeline.PIPELINE_CONTRACT_VERSION != "fresh-raw-split-extraction-selectkbest-cpu-v1":
-    raise RuntimeError("Incompatible HStack1024 FS contract")
+
+expected_imports = {
+    "hstack1024_pipeline": (hstack1024_pipeline, BASE_SRC / "hstack1024_pipeline"),
+    "hstack1024_fs_pipeline": (hstack1024_fs_pipeline, FS_SRC / "hstack1024_fs_pipeline"),
+}
+for package_name, (package, expected_dir) in expected_imports.items():
+    imported_file = getattr(package, "__file__", None)
+    if imported_file is None or Path(imported_file).resolve().parent != expected_dir.resolve():
+        raise RuntimeError(
+            f"Imported {package_name} from {imported_file!r}; expected {expected_dir}"
+        )
+
+base_contract = getattr(hstack1024_pipeline, "PIPELINE_CONTRACT_VERSION", None)
+if base_contract != "fresh-raw-split-extraction-cpu-v2":
+    raise RuntimeError(
+        "Incompatible base HStack1024 contract: "
+        f"{base_contract!r} from {hstack1024_pipeline.__file__}"
+    )
+fs_contract = getattr(hstack1024_fs_pipeline, "PIPELINE_CONTRACT_VERSION", None)
+if fs_contract != "fresh-raw-split-extraction-selectkbest-cpu-v1":
+    raise RuntimeError(
+        "Incompatible HStack1024 FS contract: "
+        f"{fs_contract!r} from {hstack1024_fs_pipeline.__file__}"
+    )
 print("Base root     :", BASE_ROOT)
 print("FS materials  :", FS_ROOT)
 print("Inference device: CPU")
