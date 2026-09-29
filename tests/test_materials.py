@@ -30,6 +30,8 @@ class MaterialBundleTest(unittest.TestCase):
         self.assertEqual(recorded["inference_device"], "cpu")
         self.assertEqual(len([p for p in recorded["files"] if p.startswith("models/")]), 8)
         self.assertEqual(len([p for p in recorded["files"] if p.startswith("references/")]), 8)
+        self.assertIn("base_src/hstack1024_pipeline/__init__.py", recorded["files"])
+        self.assertIn("base_src/hstack1024_pipeline/pipeline.py", recorded["files"])
         self.assertLess(sum(item["bytes"] for item in recorded["files"].values()), 2_000_000)
         for relative, metadata in expected["files"].items():
             target = builder.DESTINATION / relative

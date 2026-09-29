@@ -50,6 +50,14 @@ def source_tree_files() -> dict[Path, Path]:
     }
 
 
+def base_source_tree_files() -> dict[Path, Path]:
+    """Vendor the small, exact base runtime; large artifacts remain in Kaggle Input."""
+    return {
+        Path("base_src") / path.relative_to(BASE_SRC): path
+        for path in sorted(BASE_SRC.rglob("*.py"))
+    }
+
+
 def contract_payload() -> dict:
     return {
         "contract_version": "fresh-raw-split-extraction-selectkbest-cpu-v1",
@@ -74,7 +82,7 @@ def contract_payload() -> dict:
 
 
 def expected_manifest() -> dict:
-    sources = {**artifact_sources(), **source_tree_files()}
+    sources = {**artifact_sources(), **source_tree_files(), **base_source_tree_files()}
     return {
         "material_slug": "hstack1024-fs-extension",
         "mode": "fresh HStack1024 extraction plus frozen SelectKBest/final-model inference",
@@ -95,7 +103,8 @@ def expected_manifest() -> dict:
 
 def build() -> None:
     DESTINATION.mkdir(parents=True, exist_ok=True)
-    for relative, source in {**artifact_sources(), **source_tree_files()}.items():
+    sources = {**artifact_sources(), **source_tree_files(), **base_source_tree_files()}
+    for relative, source in sources.items():
         target = DESTINATION / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, target)
@@ -109,7 +118,7 @@ def build() -> None:
     )
     (DESTINATION / "README.txt").write_text(
         "HStack1024 SelectKBest extension materials (8 frozen final pipelines).\n"
-        "Contains: source package, 8 frozen final bundles, 8 reference tables.\n"
+        "Contains: exact base/FS runtime source, 8 frozen final bundles, 8 reference tables.\n"
         "Does not contain precomputed sample features or the 4.1 GB deep-feature assets.\n"
         "Kaggle also requires manaschaiaonon/hstack1024-pipeline-libs, raw AR/ER/GR/PR "
         "CSV input, and the four reproduce-00 split-oracle outputs.\n"

@@ -90,6 +90,38 @@
     "src/hstack1024_fs_pipeline/pipeline.py": {
       "sha256": "a39982514f7393287e37da0ae18be8ce5513c968d7bcfa6cd849e1a5bbd9e7d5",
       "bytes": 15986
+    },
+    "base_src/hstack1024_pipeline/__init__.py": {
+      "sha256": "6bd46575867c341810e774dabd9ef1d3f7e72550b9a9a6a455981e4fe5baf655",
+      "bytes": 276
+    },
+    "base_src/hstack1024_pipeline/cli.py": {
+      "sha256": "180605568c7a4b9bb1c319324f23fa0745ec3a7f3fca6bfbb68fe50fde1d9d87",
+      "bytes": 2551
+    },
+    "base_src/hstack1024_pipeline/config.py": {
+      "sha256": "50faf31e5ca1dff33ac2803f05c9df646e4ea545a5c185f37216c2e3a75e61e9",
+      "bytes": 7025
+    },
+    "base_src/hstack1024_pipeline/extractors.py": {
+      "sha256": "02adc0e159d36fa7e71aa8e453ca037cd83aa96252affb2fd1048112b65b71ce",
+      "bytes": 12451
+    },
+    "base_src/hstack1024_pipeline/io_contract.py": {
+      "sha256": "09502c91461f0922fd165b2468ef18d93b56672e52e22bf0d194469fed3b7d63",
+      "bytes": 4241
+    },
+    "base_src/hstack1024_pipeline/metrics.py": {
+      "sha256": "b88082b6a8f36f1542c6599ec1b04e330c5d6c72e0d03cfd410f4fcfc3b110d0",
+      "bytes": 890
+    },
+    "base_src/hstack1024_pipeline/pipeline.py": {
+      "sha256": "947f6b00974dfb8cea5cd84f61150559237513dafa3b86bdb5b79d5f1cb72812",
+      "bytes": 14834
+    },
+    "base_src/hstack1024_pipeline/preprocessing.py": {
+      "sha256": "15a08fcd9038dcb58250b03476c0541fa5de6856bcbd52e67364061592590d8e",
+      "bytes": 3268
     }
   }
 }

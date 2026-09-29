@@ -195,10 +195,12 @@ BASE_ROOT = Path(BASE_ROOT_OVERRIDE).expanduser() if BASE_ROOT_OVERRIDE else (
 FS_ROOT = Path(FS_ROOT_OVERRIDE).expanduser() if FS_ROOT_OVERRIDE else (
     EXTENSION_ROOT / "materials/hstack1024-fs-extension"
 )
-BASE_SRC = BASE_ROOT / "src"
+BASE_CODE_SRC = FS_ROOT / "base_src"
 FS_SRC = FS_ROOT / "src"
-if not (BASE_SRC / "hstack1024_pipeline").is_dir():
-    raise FileNotFoundError(f"Attach base Kaggle library; package not found: {BASE_SRC}")
+if not BASE_ROOT.is_dir():
+    raise FileNotFoundError(f"Attach base Kaggle library; root not found: {BASE_ROOT}")
+if not (BASE_CODE_SRC / "hstack1024_pipeline").is_dir():
+    raise FileNotFoundError(f"Vendored base source package not found: {BASE_CODE_SRC}")
 if not (FS_SRC / "hstack1024_fs_pipeline").is_dir():
     raise FileNotFoundError(f"FS source package not found: {FS_SRC}")
 
@@ -222,14 +224,14 @@ for module_name in list(sys.modules):
         or module_name.startswith("hstack1024_fs_pipeline.")
     ):
         del sys.modules[module_name]
-sys.path[:0] = [str(FS_SRC), str(BASE_SRC)]
+sys.path[:0] = [str(FS_SRC), str(BASE_CODE_SRC)]
 importlib.invalidate_caches()
 
 import hstack1024_pipeline
 import hstack1024_fs_pipeline
 
 expected_imports = {
-    "hstack1024_pipeline": (hstack1024_pipeline, BASE_SRC / "hstack1024_pipeline"),
+    "hstack1024_pipeline": (hstack1024_pipeline, BASE_CODE_SRC / "hstack1024_pipeline"),
     "hstack1024_fs_pipeline": (hstack1024_fs_pipeline, FS_SRC / "hstack1024_fs_pipeline"),
 }
 for package_name, (package, expected_dir) in expected_imports.items():

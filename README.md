@@ -39,6 +39,7 @@ RegressionPipeline_hstack1024_FS/
   src/hstack1024_fs_pipeline/       # shared runtime
   pipelines/                         # 8 thin entry points
   materials/hstack1024-fs-extension/ # small GitHub/Kaggle extension
+    base_src/                         # exact small base runtime source
     models/                           # 8 frozen final bundles
     references/                       # 8 original result tables
     src/                              # manifest-verified runtime copy
@@ -51,8 +52,9 @@ RegressionPipeline_hstack1024_FS/
   run_all.py
 ```
 
-Extension bundle มีขนาดเล็กและเหมาะกับ GitHub เพราะไม่คัดลอก deep checkpoints
-ประมาณ 4.1 GB จาก base library เดิม ใน Kaggle ให้ attach
+Extension bundle มีขนาดเล็กและเหมาะกับ GitHub โดยรวม exact base runtime source
+เพื่อไม่พึ่ง source รุ่นเก่าใน Kaggle Input แต่ไม่คัดลอก deep checkpoints ประมาณ
+4.1 GB จาก base library เดิม ใน Kaggle ให้ attach
 `manaschaiaonon/hstack1024-pipeline-libs` เป็น read-only base dependency แล้ว
 pull repository นี้เพื่อใช้ source และ FS materials.
 
