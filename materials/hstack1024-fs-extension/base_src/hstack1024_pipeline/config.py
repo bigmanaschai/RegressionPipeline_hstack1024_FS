@@ -104,9 +104,9 @@ def is_flat_kaggle_bundle(repo_root: Optional[Path]) -> bool:
     if repo_root is None:
         return False
     root = Path(repo_root)
-    return (
-        (root / "arergrpr-hstack1024-baseline.xlsx").is_file()
-        and (root / "src" / "hstack1024_pipeline").is_dir()
+    return all(
+        (root / directory).is_dir()
+        for directory in ("checkpoints", "models", "transformers")
     )
 
 

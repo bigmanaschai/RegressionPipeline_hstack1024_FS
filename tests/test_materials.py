@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import sys
 import unittest
 from pathlib import Path
 
@@ -39,6 +40,54 @@ class MaterialBundleTest(unittest.TestCase):
             target = builder.DESTINATION / relative
             self.assertTrue(target.is_file())
             self.assertEqual(builder.sha256(target), metadata["sha256"])
+
+    def test_vendored_base_resolves_flat_kaggle_artifact_layout(self):
+        config_path = (
+            ROOT
+            / "materials"
+            / "hstack1024-fs-extension"
+            / "base_src"
+            / "hstack1024_pipeline"
+            / "config.py"
+        )
+        spec = importlib.util.spec_from_file_location("vendored_base_config", config_path)
+        config = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = config
+        try:
+            spec.loader.exec_module(config)
+        finally:
+            sys.modules.pop(spec.name, None)
+
+        base_root = (
+            ROOT.parent
+            / "frozen_hstack1024_ridge"
+            / "kaggle_dataset"
+            / "hstack1024-pipeline-libs"
+        )
+        self.assertTrue(config.is_flat_kaggle_bundle(base_root))
+        for dataset in config.DATASETS:
+            for family in config.FAMILY_ORDER:
+                checkpoint = config.checkpoint_path(dataset, family, base_root)
+                self.assertEqual(
+                    checkpoint,
+                    base_root / "checkpoints" / f"model_{family}_{dataset}.pt",
+                )
+                self.assertTrue(checkpoint.is_file())
+            transformer = config.fingerprint_transformer_path(dataset, base_root)
+            self.assertEqual(
+                transformer,
+                base_root / "transformers" / f"ecfp_transformer_{dataset}.pkl",
+            )
+            self.assertTrue(transformer.is_file())
+            scaler = config.scaler_path(dataset, base_root)
+            self.assertEqual(
+                scaler,
+                base_root / "models" / f"{dataset}_normalizer_minmax.pkl",
+            )
+            self.assertTrue(scaler.is_file())
+            ridge = config.ridge_path(dataset, base_root)
+            self.assertEqual(ridge, base_root / "models" / f"{dataset}_Ridge.pkl")
+            self.assertTrue(ridge.is_file())
 
 
 if __name__ == "__main__":

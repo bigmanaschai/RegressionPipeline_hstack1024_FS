@@ -132,6 +132,26 @@ def component_descriptor(spec) -> dict:
     }
 
 
+def patched_base_config() -> bytes:
+    """Make Kaggle artifact detection independent of optional source metadata."""
+    source = (BASE_SRC / "hstack1024_pipeline" / "config.py").read_text(
+        encoding="utf-8"
+    )
+    old = """    return (
+        (root / \"arergrpr-hstack1024-baseline.xlsx\").is_file()
+        and (root / \"src\" / \"hstack1024_pipeline\").is_dir()
+    )
+"""
+    new = """    return all(
+        (root / directory).is_dir()
+        for directory in (\"checkpoints\", \"models\", \"transformers\")
+    )
+"""
+    if source.count(old) != 1:
+        raise AssertionError("Unexpected base config: flat-bundle detector changed")
+    return source.replace(old, new).encode("utf-8")
+
+
 def generated_materials() -> dict[Path, bytes]:
     ar_pearson = next(spec for spec in all_variants() if spec.variant_id == "AR_pearson")
     selections = {
@@ -150,6 +170,7 @@ def generated_materials() -> dict[Path, bytes]:
         ],
     }
     return {
+        Path("base_src/hstack1024_pipeline/config.py"): patched_base_config(),
         Path("models/AR_pearson_bundle.json"): (
             json.dumps(component_descriptor(ar_pearson), indent=2, ensure_ascii=False)
             + "\n"
@@ -173,6 +194,7 @@ def base_source_tree_files() -> dict[Path, Path]:
     return {
         Path("base_src") / path.relative_to(BASE_SRC): path
         for path in sorted(BASE_SRC.rglob("*.py"))
+        if path.relative_to(BASE_SRC) != Path("hstack1024_pipeline/config.py")
     }
 
 
