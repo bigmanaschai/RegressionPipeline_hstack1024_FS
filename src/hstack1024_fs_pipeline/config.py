@@ -100,7 +100,6 @@ _SPECS = (
         "hstack_regression_PR_selectkbest_correlation.csv",
         "Ridge", 25, {"alpha": 10.0},
         "PR_selectkbest_correlation", 0.705562571628553,
-        "highest CVR2 (source sheet has no Choose_Method column)",
     ),
 )
 

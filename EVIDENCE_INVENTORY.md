@@ -30,7 +30,6 @@ The runtime preserves the source label in each manifest, identifies the row by
 `Model + FS_Method + FS_k`, and separately requires the ER bundle identity and
 ER row-count contract. No source CSV is rewritten.
 
-The `PR_selectkbest_correlation` workbook sheet does not contain a
-`Choose_Method` column. Its top CVR2 row is `Ridge`, k=25 and matches the
-supplied frozen `best_model_PR.pkl`; this exception is recorded in
+All eight workbook sheets contain exactly one `Choose_Method == TRUE` row;
+the selected sheet, model, FS_k, and reference Test R² are recorded in
 `materials/hstack1024-fs-extension/SELECTIONS.json`.

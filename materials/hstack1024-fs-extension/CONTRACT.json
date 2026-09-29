@@ -115,7 +115,7 @@
       },
       "source_stage": "arergrpr-pr-hstack1024-kbest-corr-pearson",
       "reference_sheet": "PR_selectkbest_correlation",
-      "selection_rule": "highest CVR2 (source sheet has no Choose_Method column)",
+      "selection_rule": "Choose_Method == TRUE",
       "reference_test_r2": 0.705562571628553
     }
   ]

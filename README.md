@@ -12,9 +12,7 @@
 
 ค่า model, parameter, scaler, selector, selected indices และ k มาจาก sheet ที่ตรงกับ
 แต่ละ variant ใน `arergrpr-HStack1024 Feature Selection.xlsx` โดยเลือกแถว
-`Choose_Method == TRUE` ไม่ได้เลือกหรือ train ใหม่ สำหรับ PR–pearson ซึ่ง source
-sheet ไม่มีคอลัมน์ดังกล่าว ใช้แถว CVR2 อันดับ 1 (`Ridge`, k=25) ซึ่งตรงกับ frozen
-`best_model_PR.pkl` เดิม
+`Choose_Method == TRUE` อย่างละหนึ่งแถว ไม่ได้เลือกหรือ train ใหม่
 
 ## Scientific execution contract
 

@@ -68,7 +68,7 @@
       "dataset": "PR",
       "method": "pearson",
       "sheet": "PR_selectkbest_correlation",
-      "selection_rule": "highest CVR2 (source sheet has no Choose_Method column)",
+      "selection_rule": "Choose_Method == TRUE",
       "model": "Ridge",
       "FS_k": 25,
       "Reference_Test_R2": 0.705562571628553

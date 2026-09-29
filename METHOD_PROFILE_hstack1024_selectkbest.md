@@ -61,10 +61,7 @@ pipeline does not repeat the historical model search. The historical operation
 order is frozen MinMax transform, frozen SelectKBest transform, then frozen
 regressor inference.
 
-Seven source sheets contain exactly one `Choose_Method == TRUE` row. The
-`PR_selectkbest_correlation` sheet lacks the `Choose_Method` column; its first
-CVR2-ranked row (`Ridge`, k=25) is retained and matches the supplied frozen
-`best_model_PR.pkl`.
+All eight source sheets contain exactly one `Choose_Method == TRUE` row.
 
 ## Evaluation and acceptance
 

@@ -51,6 +51,7 @@ class FrozenFeatureSelectionContractTest(unittest.TestCase):
             self.assertEqual(spec.model_class, model)
             self.assertEqual(spec.selected_k, selected_k)
             self.assertAlmostEqual(spec.reference_test_r2, test_r2, places=12)
+            self.assertEqual(spec.selection_rule, "Choose_Method == TRUE")
 
     def test_runtime_contains_no_estimator_fitting_call(self):
         source = inspect.getsource(pipeline_module) + inspect.getsource(artifacts_module)

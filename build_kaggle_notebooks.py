@@ -58,8 +58,7 @@ Run target: **{title}**
 
 Final `Model`, `FS_k`, and reference metrics follow the matching sheet in
 `arergrpr-HStack1024 Feature Selection.xlsx`. The designated row is
-`Choose_Method == TRUE`; the source `PR_selectkbest_correlation` sheet lacks
-that column, so its top-CVR2 frozen row (`Ridge`, k=25) is recorded explicitly.
+`Choose_Method == TRUE` for all eight variants.
 
 | Step | Stage | Input | Process | Output |
 |---:|---|---|---|---|
