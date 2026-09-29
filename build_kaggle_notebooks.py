@@ -104,7 +104,11 @@ def find_extension_root(project_root):
     nested = project_root / EXPECTED_RELATIVE
     if nested.is_dir():
         return nested
-    if (project_root / "pipeline_extension").is_dir() and (project_root / "materials").is_dir():
+    if (
+        (project_root / "src" / "hstack1024_fs_pipeline").is_dir()
+        and (project_root / "materials" / "hstack1024-fs-extension").is_dir()
+        and (project_root / "pyproject.toml").is_file()
+    ):
         return project_root
     raise FileNotFoundError(
         f"RegressionPipeline_hstack1024_FS source not found under: {project_root}"

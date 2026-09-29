@@ -90,7 +90,8 @@ python standard_pipeline/RegressionPipeline_hstack1024_FS/run_all.py \
 
 1. Push repository พร้อม `materials/hstack1024-fs-extension` ขึ้น GitHub.
 2. Import notebook จาก `kaggle_notebooks/`.
-3. กำหนด `GITHUB_REPO_URL` และควร pin `GITHUB_REF` เป็น tag หรือ commit.
+3. Public `GITHUB_REPO_URL` ถูกกำหนดไว้แล้ว; ใช้ `main` หรือ pin `GITHUB_REF`
+   เป็น tag/commit เพื่อความ reproducible.
 4. Attach Inputs 6 ชุด:
    - `manaschaiaonon/hstack1024-pipeline-libs`;
    - `plenoi/ar-er-gr-pr`;

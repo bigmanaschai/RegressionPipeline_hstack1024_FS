@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import importlib.util
+import ast
 import json
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -19,6 +21,33 @@ def load_builder():
 
 
 class KaggleNotebookTest(unittest.TestCase):
+    def test_checkout_root_detection_accepts_standalone_github_layout(self):
+        notebook = load_builder().notebook("AR", "mutual_info")
+        resolver_source = next(
+            "".join(cell["source"])
+            for cell in notebook["cells"]
+            if cell["cell_type"] == "code"
+            and "def find_extension_root" in "".join(cell["source"])
+        )
+        module = ast.parse(resolver_source)
+        resolver_function = next(
+            node
+            for node in module.body
+            if isinstance(node, ast.FunctionDef) and node.name == "find_extension_root"
+        )
+        namespace = {
+            "Path": Path,
+            "EXPECTED_RELATIVE": Path("standard_pipeline/RegressionPipeline_hstack1024_FS"),
+        }
+        exec(compile(ast.Module(body=[resolver_function], type_ignores=[]), "resolver", "exec"), namespace)
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            checkout = Path(temp_dir)
+            (checkout / "src" / "hstack1024_fs_pipeline").mkdir(parents=True)
+            (checkout / "materials" / "hstack1024-fs-extension").mkdir(parents=True)
+            (checkout / "pyproject.toml").touch()
+            self.assertEqual(namespace["find_extension_root"](checkout), checkout)
+
     def test_nine_notebooks_are_current_and_compile(self):
         rendered = load_builder().rendered_notebooks()
         self.assertEqual(len(rendered), 9)
