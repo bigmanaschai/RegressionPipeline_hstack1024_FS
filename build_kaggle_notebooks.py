@@ -80,7 +80,7 @@ RUN_DATASET = {dataset!r}
 RUN_METHOD = {method!r}
 TOLERANCE = 0.001
 
-GITHUB_REPO_URL = ""   # e.g. "https://github.com/<owner>/<repo>.git"
+GITHUB_REPO_URL = "https://github.com/bigmanaschai/RegressionPipeline_hstack1024_FS.git"
 GITHUB_REF = "main"    # branch, tag, or commit available to git clone
 PROJECT_ROOT_OVERRIDE = ""  # existing checkout; takes priority over clone
 BASE_ROOT_OVERRIDE = ""     # blank = standard Kaggle base-library path
@@ -98,6 +98,17 @@ from pathlib import Path
 import subprocess
 
 EXPECTED_RELATIVE = Path("standard_pipeline/RegressionPipeline_hstack1024_FS")
+
+def find_extension_root(project_root):
+    """Support both the monorepo layout and this package's standalone GitHub repo."""
+    nested = project_root / EXPECTED_RELATIVE
+    if nested.is_dir():
+        return nested
+    if (project_root / "pipeline_extension").is_dir() and (project_root / "materials").is_dir():
+        return project_root
+    raise FileNotFoundError(
+        f"RegressionPipeline_hstack1024_FS source not found under: {project_root}"
+    )
 
 if PROJECT_ROOT_OVERRIDE:
     PROJECT_ROOT = Path(PROJECT_ROOT_OVERRIDE).expanduser().resolve()
@@ -122,9 +133,7 @@ else:
     )
     PROJECT_ROOT = checkout.resolve()
 
-EXTENSION_ROOT = PROJECT_ROOT / EXPECTED_RELATIVE
-if not EXTENSION_ROOT.is_dir():
-    raise FileNotFoundError(f"Extension source not found: {EXTENSION_ROOT}")
+EXTENSION_ROOT = find_extension_root(PROJECT_ROOT)
 print("Project root:", PROJECT_ROOT)
 print("Extension   :", EXTENSION_ROOT)
 '''
