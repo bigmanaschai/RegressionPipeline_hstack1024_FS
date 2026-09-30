@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import inspect
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -149,6 +150,31 @@ class OODRegressionProtocolTest(unittest.TestCase):
         self.assertNotIn("load_reference_row", source)
         self.assertNotIn("regression_metrics", source)
         self.assertNotIn("reference_path", source)
+
+    def test_legacy_methods_keyword_maps_to_selectkbest_variant(self):
+        query = pd.DataFrame({"ID": ["Q-1"], "Smiles": ["C"]})
+        summary = pd.DataFrame({"Dataset": ["AR"], "k": [3]})
+        with tempfile.TemporaryDirectory() as temp_dir, patch.object(
+            ood_module, "load_query_compounds", return_value=query
+        ), patch.object(
+            ood_module, "prepare_domain_training", return_value=object()
+        ), patch.object(
+            ood_module,
+            "_extract_domain_and_query",
+            return_value=(np.zeros((30, 1024)), np.zeros((1, 1024))),
+        ), patch.object(
+            ood_module, "_run_selectkbest_variant", return_value=summary
+        ) as run_variant:
+            actual = ood_module.run_production_ood_dataset(
+                "AR",
+                Path("query.csv"),
+                Path(temp_dir),
+                methods=("mutual_info",),
+                raw_csv=Path("raw.csv"),
+            )
+
+        pd.testing.assert_frame_equal(actual, summary)
+        self.assertEqual(run_variant.call_args.args[1], "mutual_info")
 
     def test_current_case_study_schema_is_id_and_smiles_only(self):
         path = (

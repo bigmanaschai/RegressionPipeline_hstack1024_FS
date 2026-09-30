@@ -514,8 +514,9 @@ def run_production_ood_dataset(
     query_csv: Path,
     output_root: Path,
     *,
-    feature_space: str,
+    feature_space: Optional[str] = None,
     method: Optional[str] = None,
+    methods: Optional[Sequence[str]] = None,
     base_root: Optional[Path] = None,
     fs_root: Optional[Path] = None,
     repo_root: Optional[Path] = None,
@@ -524,16 +525,36 @@ def run_production_ood_dataset(
     smiles_column: str = "Smiles",
     activity_threshold: float = ACTIVITY_PIC50_THRESHOLD,
 ) -> pd.DataFrame:
-    """Run one of the 12 controlled endpoint/feature-space OOD variants."""
+    """Run controlled endpoint/feature-space OOD variants.
+
+    ``methods`` is retained for notebooks generated before the 12-variant API.
+    Those notebooks only produced SelectKBest variants and may request one or
+    both feature-selection methods in a single call. New callers should pass
+    ``feature_space`` and, for SelectKBest, the singular ``method`` argument.
+    """
     ds = normalize_dataset(dataset)
-    space = str(feature_space).strip().lower()
+    if methods is not None:
+        if method is not None:
+            raise ValueError("Use either method or methods, not both")
+        if feature_space not in (None, "selectkbest"):
+            raise ValueError("Legacy methods is only valid for selectkbest OOD")
+        selected_methods = tuple(normalize_method(item) for item in methods)
+        if not selected_methods:
+            raise ValueError("At least one feature-selection method is required")
+        space = "selectkbest"
+    else:
+        if feature_space is None:
+            raise ValueError("feature_space is required")
+        space = str(feature_space).strip().lower()
+        selected_methods = (
+            (normalize_method(method),) if method is not None else tuple()
+        )
     if space not in OOD_FEATURE_SPACES:
         raise ValueError(f"feature_space must be one of {OOD_FEATURE_SPACES}")
-    if space == "selectkbest" and method is None:
+    if space == "selectkbest" and not selected_methods:
         raise ValueError("method is required for selectkbest OOD")
-    if space == "hstack1024" and method is not None:
+    if space == "hstack1024" and selected_methods:
         raise ValueError("method must be omitted for hstack1024 OOD")
-    selected_method = normalize_method(method) if method is not None else None
 
     raw_source = raw_csv_path(ds, base_root) if raw_csv is None else Path(raw_csv)
     query_source = Path(query_csv)
@@ -563,27 +584,39 @@ def run_production_ood_dataset(
             activity_threshold=activity_threshold,
         )
     else:
-        report = _run_selectkbest_variant(
-            ds,
-            selected_method,
-            output_root,
-            training_hstack,
-            query_hstack,
-            query,
-            query_csv=query_source,
-            raw_csv=raw_source,
-            id_column=id_column,
-            smiles_column=smiles_column,
-            fs_root=fs_root,
-            repo_root=repo_root,
-            activity_threshold=activity_threshold,
-        )
+        reports = [
+            _run_selectkbest_variant(
+                ds,
+                selected_method,
+                output_root,
+                training_hstack,
+                query_hstack,
+                query,
+                query_csv=query_source,
+                raw_csv=raw_source,
+                id_column=id_column,
+                smiles_column=smiles_column,
+                fs_root=fs_root,
+                repo_root=repo_root,
+                activity_threshold=activity_threshold,
+            )
+            for selected_method in selected_methods
+        ]
+        report = pd.concat(reports, ignore_index=True)
+    selected_label = (
+        selected_methods[0] if len(selected_methods) == 1 else "all"
+    ) if space == "selectkbest" else "base"
     aggregate_dir = Path(output_root) / ds
     aggregate_dir.mkdir(parents=True, exist_ok=True)
     report.to_csv(
-        aggregate_dir / f"ood_summary_{space}_{selected_method or 'base'}.csv",
+        aggregate_dir / f"ood_summary_{space}_{selected_label}.csv",
         index=False,
     )
+    if methods is not None:
+        report.to_csv(
+            aggregate_dir / "ood_summary.csv",
+            index=False,
+        )
     return report
 
 
@@ -592,6 +625,7 @@ def run_production_ood_all(
     output_root: Path,
     *,
     datasets: Sequence[str],
+    methods: Optional[Sequence[str]] = None,
     base_root: Optional[Path] = None,
     fs_root: Optional[Path] = None,
     repo_root: Optional[Path] = None,
@@ -600,9 +634,26 @@ def run_production_ood_all(
     smiles_column: str = "Smiles",
     activity_threshold: float = ACTIVITY_PIC50_THRESHOLD,
 ) -> pd.DataFrame:
-    """Run all 12 variants; retained as an API, not emitted as a notebook."""
+    """Run all 12 variants, or legacy SelectKBest-only notebook requests."""
     reports = []
     for dataset in datasets:
+        if methods is not None:
+            reports.append(
+                run_production_ood_dataset(
+                    dataset,
+                    query_csv,
+                    output_root,
+                    methods=methods,
+                    base_root=base_root,
+                    fs_root=fs_root,
+                    repo_root=repo_root,
+                    raw_csv=raw_csv_paths[dataset],
+                    id_column=id_column,
+                    smiles_column=smiles_column,
+                    activity_threshold=activity_threshold,
+                )
+            )
+            continue
         reports.append(
             run_production_ood_dataset(
                 dataset,
