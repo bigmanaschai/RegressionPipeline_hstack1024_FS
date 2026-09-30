@@ -48,11 +48,15 @@ class MaterialBundleTest(unittest.TestCase):
             (builder.DESTINATION / "CONTRACT.json").read_text(encoding="utf-8")
         )
         ood = contract["optional_post_analysis"]
-        self.assertEqual(ood["feature_dimension"], 1024)
+        self.assertEqual(ood["notebook_count"], 12)
+        self.assertEqual(set(ood["feature_spaces"]), {"hstack1024", "selectkbest"})
         self.assertEqual(ood["k_values"], list(range(3, 26)))
+        self.assertEqual(ood["activity_threshold_pic50"], 6.0)
         self.assertFalse(ood["historical_reference_comparison_performed"])
         self.assertFalse(ood["split_oracle_used"])
+        self.assertFalse(ood["test_split_used"])
         self.assertFalse(ood["regression_model_refitted"])
+        self.assertTrue(ood["activity_classifier_fitted"])
 
     def test_vendored_base_resolves_flat_kaggle_artifact_layout(self):
         config_path = (

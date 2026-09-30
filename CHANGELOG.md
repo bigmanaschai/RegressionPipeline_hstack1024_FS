@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.2.0
+
+- Replaced the nine OOD continuations with 12 standalone notebooks: eight
+  frozen-SelectKBest feature spaces and four full scaled-HStack1024 spaces.
+- Changed the OOD domain reference from Train 60% to deterministic
+  Train+Validation 80%; held-out Test is excluded from every OOD calculation.
+- Added the professor-style LDA activity layer with Positive defined as
+  `pIC50 >= 6.0` and Probability equal to the posterior for Positive.
+- Added exact `IND_Result.csv` reporting with `ADk3` through `ADk25`, while
+  retaining numeric predicted pIC50 in the detailed production output.
+- Moved the query CSV to the dedicated `ood-regression-arergrpr` Kaggle input
+  and confirmed that MACCSFingerprint is not used.
+
 ## 1.1.0
 
 - Added nine Kaggle notebook continuations for regression applicability-domain

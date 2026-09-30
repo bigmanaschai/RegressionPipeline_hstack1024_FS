@@ -205,19 +205,31 @@ def contract_payload() -> dict:
         "inference_device": "cpu",
         "quality_gate": {"metric": "Test_R2", "absolute_tolerance": 0.001},
         "optional_post_analysis": {
-            "name": "production new-compound regression and kNN applicability domain",
-            "protocol_source": "standard_pipeline/OOD_ajPle/Readme.rtf",
+            "name": "production regression, LDA activity reporting, and kNN applicability domain",
+            "protocol_source": (
+                "standard_pipeline/OOD_ajPle/"
+                "ppar-2098c-ad-analyze-web-figure.ipynb"
+            ),
             "default_query": (
                 "/kaggle/input/datasets/manaschaiaonon/"
-                "hstack1024-pipeline-libs/cleaned_Casestudy.csv"
+                "ood-regression-arergrpr/cleaned_Casestudy.csv"
             ),
-            "feature_space": "frozen-MinMax-scaled HStack1024 before SelectKBest",
-            "feature_dimension": 1024,
+            "notebook_count": 12,
+            "feature_spaces": {
+                "hstack1024": "4 endpoint notebooks at 1024 dimensions",
+                "selectkbest": "8 endpoint/method notebooks at frozen FS_k",
+            },
+            "domain_reference": "raw-derived Train+Validation 80%; Test excluded",
             "k_values": list(range(3, 26)),
             "threshold": "training mean kNN distance + 0.5 * training SD",
+            "activity_classifier": "LinearDiscriminantAnalysis(tol=0.00001)",
+            "activity_threshold_pic50": 6.0,
+            "probability": "predict_proba for class 0 (Positive)",
             "historical_reference_comparison_performed": False,
             "split_oracle_used": False,
+            "test_split_used": False,
             "regression_model_refitted": False,
+            "activity_classifier_fitted": True,
         },
         "variants": [
             {
@@ -292,8 +304,8 @@ def build() -> None:
         "Standard replay requires the base library, raw AR/ER/GR/PR CSV input, "
         "and the four reproduce-00 split-oracle outputs.\n"
         "CPU inference only; no selector, scaler, or estimator training/refitting occurs.\n"
-        "Production OOD reads cleaned_Casestudy.csv, fits only a kNN domain index, "
-        "and reports k=3..25 without historical reference replay or split oracles.\n",
+        "Production OOD uses Train+Validation 80%, excludes Test, fits the professor-style "
+        "LDA activity layer plus a kNN domain index, and reports k=3..25.\n",
         encoding="utf-8",
     )
 

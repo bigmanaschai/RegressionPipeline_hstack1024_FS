@@ -114,27 +114,30 @@ fresh extraction เดียวกันกับ selector สองแบบ�
 ### OOD Regression continuations
 
 โฟลเดอร์ [`kaggle_notebooks/OOD-Regression`](kaggle_notebooks/OOD-Regression)
-มี production notebooks ครบ 9 ไฟล์ซึ่งไม่รัน reference gate โดยอ่านสารใหม่จาก
-`/kaggle/input/datasets/manaschaiaonon/hstack1024-pipeline-libs/cleaned_Casestudy.csv`
+มี production notebooks ครบ 12 ไฟล์ซึ่งไม่รัน reference gate โดยอ่านสารใหม่จาก
+`/kaggle/input/datasets/manaschaiaonon/ood-regression-arergrpr/cleaned_Casestudy.csv`
 และวิเคราะห์ applicability domain ตาม `standard_pipeline/OOD_ajPle/Readme.rtf`:
 
-- เปรียบเทียบ raw-derived training กับสารใหม่ใน frozen-MinMax-scaled HStack1024
-  ก่อน SelectKBest เพื่อคง feature dimension ที่ 1024;
+- ใช้ Train+Validation 80% เป็น `smiles_tr` และกัน Test ออกจาก OOD ทั้งหมด;
+- Notebook `01`–`08` คำนวณ OOD หลัง frozen SelectKBest ตาม `FS_k`;
+- Notebook `09`–`12` คำนวณ OOD ใน frozen-MinMax-scaled HStack1024 ครบ 1024 มิติ;
 - ใช้ kNN mean distance และ threshold = training mean + `0.5 × SD`;
 - รายงานทุกค่า `k=3, 4, ..., 25` พร้อมป้าย `IND`/`OOD`; และ
-- รายงาน frozen-model `Predicted_pIC50` และ IND coverage โดยไม่มี historical
-  metric comparison.
+- fit LDA บน Train+Validation เพื่อรายงาน `Positive`/`Negative` และ Probability
+  โดยกำหนด Positive เป็น `pIC50 >= 6.0` พร้อมเก็บ `Predicted_pIC50` แยกในไฟล์ละเอียด.
 
 ไฟล์ query ปัจจุบันมีเพียง `ID,Smiles` จึงไม่มี ground truth สำหรับคำนวณ
 R²/RMSE/MAE. OOD production notebooks ไม่ใช้ reproduce-00 outputs,
 reference CSV หรือ reference workbook.
 
-สำหรับ OOD production notebooks ให้ attach เพียง
-`manaschaiaonon/hstack1024-pipeline-libs` และ `plenoi/ar-er-gr-pr`; ไม่ต้อง attach
+สำหรับ OOD production notebooks ให้ attach
+`manaschaiaonon/hstack1024-pipeline-libs`,
+`manaschaiaonon/ood-regression-arergrpr` และ `plenoi/ar-er-gr-pr`; ไม่ต้อง attach
 AR/ER/GR/PR reproduce-00 outputs ทั้งสี่ชุด.
 
-การ `fit` ในส่วนนี้จำกัดเฉพาะ neighbour index เพื่อวัด domain เท่านั้น ไม่มีการ
-fit ใหม่สำหรับ MinMaxScaler, SelectKBest หรือ final Ridge/ElasticNet model.
+การ `fit` ใหม่มีเฉพาะ LDA activity layer บน Train+Validation และ neighbour index
+เพื่อวัด domain ไม่มีการ fit ใหม่สำหรับ MinMaxScaler, SelectKBest หรือ final
+Ridge/ElasticNet model.
 
 ## Output contract
 

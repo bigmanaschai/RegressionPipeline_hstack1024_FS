@@ -10,11 +10,15 @@
     "absolute_tolerance": 0.001
   },
   "optional_post_analysis": {
-    "name": "production new-compound regression and kNN applicability domain",
-    "protocol_source": "standard_pipeline/OOD_ajPle/Readme.rtf",
-    "default_query": "/kaggle/input/datasets/manaschaiaonon/hstack1024-pipeline-libs/cleaned_Casestudy.csv",
-    "feature_space": "frozen-MinMax-scaled HStack1024 before SelectKBest",
-    "feature_dimension": 1024,
+    "name": "production regression, LDA activity reporting, and kNN applicability domain",
+    "protocol_source": "standard_pipeline/OOD_ajPle/ppar-2098c-ad-analyze-web-figure.ipynb",
+    "default_query": "/kaggle/input/datasets/manaschaiaonon/ood-regression-arergrpr/cleaned_Casestudy.csv",
+    "notebook_count": 12,
+    "feature_spaces": {
+      "hstack1024": "4 endpoint notebooks at 1024 dimensions",
+      "selectkbest": "8 endpoint/method notebooks at frozen FS_k"
+    },
+    "domain_reference": "raw-derived Train+Validation 80%; Test excluded",
     "k_values": [
       3,
       4,
@@ -41,9 +45,14 @@
       25
     ],
     "threshold": "training mean kNN distance + 0.5 * training SD",
+    "activity_classifier": "LinearDiscriminantAnalysis(tol=0.00001)",
+    "activity_threshold_pic50": 6.0,
+    "probability": "predict_proba for class 0 (Positive)",
     "historical_reference_comparison_performed": false,
     "split_oracle_used": false,
-    "regression_model_refitted": false
+    "test_split_used": false,
+    "regression_model_refitted": false,
+    "activity_classifier_fitted": true
   },
   "variants": [
     {

@@ -3,4 +3,4 @@ Contains: exact base/FS/OOD runtime source, 8 frozen final bundles, 8 reference 
 Does not contain precomputed sample features or the 4.1 GB deep-feature assets.
 Standard replay requires the base library, raw AR/ER/GR/PR CSV input, and the four reproduce-00 split-oracle outputs.
 CPU inference only; no selector, scaler, or estimator training/refitting occurs.
-Production OOD reads cleaned_Casestudy.csv, fits only a kNN domain index, and reports k=3..25 without historical reference replay or split oracles.
+Production OOD uses Train+Validation 80%, excludes Test, fits the professor-style LDA activity layer plus a kNN domain index, and reports k=3..25.

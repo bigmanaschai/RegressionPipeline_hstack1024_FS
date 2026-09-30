@@ -19,9 +19,9 @@ def load_builder():
 
 
 class OODKaggleNotebookTest(unittest.TestCase):
-    def test_nine_ood_notebooks_are_current_and_compile(self):
+    def test_twelve_ood_notebooks_are_current_and_compile(self):
         rendered = load_builder().rendered_notebooks()
-        self.assertEqual(len(rendered), 9)
+        self.assertEqual(len(rendered), 12)
         for name, content in rendered.items():
             with self.subTest(notebook=name):
                 path = NOTEBOOK_DIR / name
@@ -37,8 +37,15 @@ class OODKaggleNotebookTest(unittest.TestCase):
                 self.assertIn("run_production_ood_dataset", source)
                 self.assertIn("tuple(range(3, 26))", source)
                 self.assertIn("IND_Coverage", source)
-                self.assertIn("cleaned_Casestudy.csv", source)
+                self.assertIn(
+                    "/kaggle/input/datasets/manaschaiaonon/"
+                    "ood-regression-arergrpr/cleaned_Casestudy.csv",
+                    source,
+                )
                 self.assertIn("production_predictions_ood.csv", source)
+                self.assertIn("IND_Result.csv", source)
+                self.assertIn("ACTIVITY_PIC50_THRESHOLD = 6.0", source)
+                self.assertIn("Probability", source)
                 self.assertIn("Production OOD runtime:", source)
                 self.assertIn("latest GITHUB_REF", source)
                 self.assertIn("ood_coverage_diagnostics.png", source)
@@ -49,6 +56,7 @@ class OODKaggleNotebookTest(unittest.TestCase):
                 self.assertNotIn("reference_verification", source)
                 self.assertNotIn("run_variant", source)
                 self.assertNotIn("TOLERANCE", source)
+                self.assertNotIn("MACCSFingerprint", source)
                 for index, cell in enumerate(notebook["cells"]):
                     if cell["cell_type"] == "code":
                         compile(

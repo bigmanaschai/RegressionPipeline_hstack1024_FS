@@ -1,47 +1,40 @@
 # Production OOD Regression notebooks
 
-These nine notebooks are clean new-compound inference pipelines for the eight
-frozen AR/ER/GR/PR × mutual_info/pearson final models. They do **not** replay
-historical test metrics, read reference CSV/workbook values, or use reproduce-00
-split-oracle outputs.
+This directory contains exactly 12 standalone Kaggle notebooks:
 
-New compounds are read from:
+- `01`–`08`: AR/ER/GR/PR × mutual_info/pearson, with OOD calculated in the
+  matching frozen-MinMax-scaled HStack1024 + frozen SelectKBest (`FS_k`) space;
+- `09`–`12`: one notebook per endpoint, with OOD calculated in the full
+  frozen-MinMax-scaled HStack1024 space (1024 d).
 
-`/kaggle/input/datasets/manaschaiaonon/hstack1024-pipeline-libs/cleaned_Casestudy.csv`
+Every notebook recreates the deterministic 60/20/20 raw split, combines only
+Train+Validation into `smiles_tr` (80%), and excludes Test from prediction,
+activity classification, calibration, and OOD. All rows in
+`/kaggle/input/datasets/manaschaiaonon/ood-regression-arergrpr/cleaned_Casestudy.csv`
+become `data`.
 
-The current file has `ID,Smiles` columns and no experimental pIC50, so outputs
-contain frozen-model `Predicted_pIC50` plus `ADk3`…`ADk25`; no R2/RMSE/MAE is
-calculated for the new compounds.
+The professor's reporting layer is reproduced with a new
+`LinearDiscriminantAnalysis(tol=0.00001)` model fitted only on Train+Validation.
+Class 0 is Positive (`pIC50 >= 6.0`), class 1 is Negative (`pIC50 < 6.0`), and
+`Probability` is `predict_proba(...)[class 0]`. The kNN OOD calculation is
+independent of this probability calculation.
 
-Production contract:
+Each notebook writes:
 
-- domain reference: the deterministic 60% training partition recreated from
-  the corresponding raw AR/ER/GR/PR dataset, without hash/oracle checks;
-- query population: `cleaned_Casestudy.csv`;
-- feature space: frozen-MinMax-scaled HStack1024 before SelectKBest (1024 d);
-- prediction: frozen scaler → frozen selector → frozen Ridge/ElasticNet;
-- OOD: kNN mean distance for every k from 3 through 25, threshold = training
-  mean + 0.5 SD;
-- no scaler, selector, or regression-model refitting.
+- `IND_Result.csv` with the professor's exact leading columns
+  `[index],Smiles,Predicted,Probability`, followed by `ADk3` through `ADk25`;
+- `production_predictions_ood.csv` with IDs, regression pIC50, and provenance;
+- `ood_summary_k3_k25.csv`;
+- `activity_classifier_lda.joblib`;
+- `production_manifest.json`; and
+- `ood_coverage_diagnostics.png`.
 
-Required Kaggle data inputs are only:
+Required Kaggle inputs:
 
-1. `manaschaiaonon/hstack1024-pipeline-libs` (deep checkpoints, fingerprint
-   transformers, and `cleaned_Casestudy.csv`); and
-2. `plenoi/ar-er-gr-pr` (raw endpoint datasets used to recreate the current
-   training-domain reference).
+1. `manaschaiaonon/hstack1024-pipeline-libs` for frozen extractors, scalers,
+   and the four baseline Ridge models;
+2. `manaschaiaonon/ood-regression-arergrpr` for `cleaned_Casestudy.csv`; and
+3. `plenoi/ar-er-gr-pr` for the four raw endpoint regression datasets.
 
-The four reproduce-00 notebook outputs are not used and should be detached from
-these production OOD notebooks. Historical reference tables/workbooks are also
-not execution inputs.
-
-Each variant writes:
-
-- `production_predictions_ood.csv`;
-- `ood_summary_k3_k25.csv`; and
-- `production_manifest.json`.
-
-The run also writes aggregate `ood_summary.csv`, `ood_summary.json` (run-all),
-and `ood_coverage_diagnostics.png`. CPU inference over 17,855 query compounds is
-substantial; the run-all notebook performs fresh extraction separately for all
-four receptor checkpoints.
+MACCSFingerprint and reproduce-00 notebook outputs are not used.
+The controlled OOD range covers every k from 3 through 25.
