@@ -9,6 +9,7 @@ from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.neighbors import NearestNeighbors
 from sklearn.model_selection import train_test_split
 
@@ -153,7 +154,9 @@ class OODRegressionProtocolTest(unittest.TestCase):
 
     def test_legacy_methods_keyword_maps_to_selectkbest_variant(self):
         query = pd.DataFrame({"ID": ["Q-1"], "Smiles": ["C"]})
-        summary = pd.DataFrame({"Dataset": ["AR"], "k": [3]})
+        summary = pd.DataFrame(
+            {"Dataset": ["AR"], "FS_Method": ["mutual_info"], "k": [3]}
+        )
         with tempfile.TemporaryDirectory() as temp_dir, patch.object(
             ood_module, "load_query_compounds", return_value=query
         ), patch.object(
@@ -174,7 +177,55 @@ class OODRegressionProtocolTest(unittest.TestCase):
             )
 
         pd.testing.assert_frame_equal(actual, summary)
+        self.assertEqual(actual["FS_Method"].tolist(), ["mutual_info"])
         self.assertEqual(run_variant.call_args.args[1], "mutual_info")
+
+    def test_variant_outputs_include_fs_method_for_legacy_plot_grouping(self):
+        query = pd.DataFrame({"ID": ["Q-1"], "Smiles": ["C"]})
+        ood_result = pd.DataFrame(
+            {
+                "ID": ["Q-1"],
+                "Smiles": ["C"],
+                **{f"ADk{k}": ["IND"] for k in range(3, 26)},
+            }
+        )
+        summary = pd.DataFrame(
+            {"k": list(range(3, 26)), "IND_Count": [1] * 23, "OOD_Count": [0] * 23,
+             "IND_Coverage": [1.0] * 23, "Distance_Threshold": [0.1] * 23}
+        )
+        classifier = LinearDiscriminantAnalysis().fit(
+            np.asarray([[0.0], [0.2], [0.8], [1.0]]), np.asarray([0, 0, 1, 1])
+        )
+        with tempfile.TemporaryDirectory() as temp_dir, patch.object(
+            ood_module, "file_hash", return_value="sha256"
+        ):
+            actual = ood_module._write_variant_outputs(
+                dataset="AR",
+                variant_name="AR_mutual_info",
+                output_dir=Path(temp_dir),
+                query=query,
+                ood_result=ood_result,
+                summary=summary,
+                predicted=np.asarray(["Positive"]),
+                probability=np.asarray([0.8]),
+                predicted_pic50=np.asarray([7.0]),
+                regression_model_name="Ridge",
+                feature_space="frozen-MinMax-scaled HStack1024 + frozen SelectKBest",
+                feature_dimension=25,
+                activity_classifier=classifier,
+                activity_threshold=6.0,
+                query_csv=Path("query.csv"),
+                raw_csv=Path("raw.csv"),
+                id_column="ID",
+                smiles_column="Smiles",
+                regression_artifact=Path("bundle.joblib"),
+                normalizer_artifact=Path("bundle.joblib"),
+                fs_method="mutual_info",
+            )
+
+            self.assertEqual(actual["FS_Method"].unique().tolist(), ["mutual_info"])
+            grouped = list(actual.groupby(["Dataset", "FS_Method"]))
+            self.assertEqual(grouped[0][0], ("AR", "mutual_info"))
 
     def test_current_case_study_schema_is_id_and_smiles_only(self):
         path = (

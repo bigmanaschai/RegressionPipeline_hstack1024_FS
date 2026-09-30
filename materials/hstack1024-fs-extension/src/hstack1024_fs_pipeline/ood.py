@@ -305,6 +305,7 @@ def _write_variant_outputs(
     smiles_column: str,
     regression_artifact: Path,
     normalizer_artifact: Path,
+    fs_method: Optional[str] = None,
     selected_feature_indices: Optional[Sequence[int]] = None,
 ) -> pd.DataFrame:
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -317,6 +318,7 @@ def _write_variant_outputs(
     detailed.insert(4, "Probability", probability)
     detailed.insert(5, "Predicted_pIC50", predicted_pic50)
     detailed.insert(0, "OOD_Feature_Space", feature_space)
+    detailed.insert(0, "FS_Method", fs_method or "none")
     detailed.insert(0, "Regression_Model", regression_model_name)
     detailed.insert(0, "Variant", variant_name)
     detailed.insert(0, "Dataset", dataset)
@@ -324,6 +326,7 @@ def _write_variant_outputs(
 
     summary.insert(0, "Feature_Dimension", int(feature_dimension))
     summary.insert(0, "OOD_Feature_Space", feature_space)
+    summary.insert(0, "FS_Method", fs_method or "none")
     summary.insert(0, "Variant", variant_name)
     summary.insert(0, "Dataset", dataset)
     summary.to_csv(output_dir / "ood_summary_k3_k25.csv", index=False)
@@ -342,6 +345,7 @@ def _write_variant_outputs(
         "domain_reference_sha256": file_hash(Path(raw_csv)),
         "domain_reference": "raw-derived Train+Validation 80%; Test excluded",
         "feature_space": feature_space,
+        "feature_selection_method": fs_method,
         "feature_dimension": int(feature_dimension),
         "feature_order": list(FAMILY_ORDER),
         "selected_feature_indices": (
@@ -448,6 +452,7 @@ def _run_selectkbest_variant(
         smiles_column=smiles_column,
         regression_artifact=frozen_bundle_path,
         normalizer_artifact=frozen_bundle_path,
+        fs_method=method,
         selected_feature_indices=selected_indices(bundle).tolist(),
     )
 
