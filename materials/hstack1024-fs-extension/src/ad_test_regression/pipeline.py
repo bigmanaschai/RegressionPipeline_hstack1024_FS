@@ -9,8 +9,8 @@ from scipy.stats import pearsonr, spearmanr
 from sklearn.neighbors import NearestNeighbors
 
 from hstack1024_pipeline.extractors import INFERENCE_DEVICE, extract_all
-from hstack1024_pipeline.io_contract import FeatureSplit, hstack_families
-from hstack1024_pipeline.pipeline import _load_verified_splits
+from hstack1024_pipeline.io_contract import FeatureSplit, SplitData, hstack_families
+from hstack1024_pipeline.preprocessing import reproduce_split
 from hstack1024_fs_pipeline.artifacts import (
     apply_frozen_minmax,
     apply_frozen_selector,
@@ -288,7 +288,6 @@ def run_test_ad_variant(
     fs_root: Optional[Path],
     repo_root: Optional[Path],
     raw_csv: Path,
-    split_paths: Mapping[str, Path],
     threshold_multipliers: Sequence[float] = DEFAULT_THRESHOLD_MULTIPLIERS,
     k_values: Sequence[int] = DEFAULT_AD_K_VALUES,
     tolerance: float = R2_TOLERANCE,
@@ -297,12 +296,14 @@ def run_test_ad_variant(
     if INFERENCE_DEVICE != "cpu":
         raise RuntimeError(f"Inference device must be CPU, got {INFERENCE_DEVICE!r}")
     spec = get_variant(dataset, method)
-    splits, _ = _load_verified_splits(
-        spec.dataset,
-        base_root,
-        Path(raw_csv),
-        split_paths,
-    )
+    raw_splits = reproduce_split(spec.dataset, Path(raw_csv))
+    splits = {
+        split_name: SplitData(
+            smiles=np.asarray(smiles).astype(str),
+            y=np.asarray(targets, dtype=float),
+        )
+        for split_name, (smiles, targets) in raw_splits.items()
+    }
     extracted = _extract_all_partitions(spec.dataset, splits, base_root)
     train = extracted["train"]
     validation = extracted["val"]
@@ -359,4 +360,3 @@ def run_test_ad_variant(
         frame.to_csv(output_path, index=False)
         paths[float(multiplier)] = output_path
     return paths
-

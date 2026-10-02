@@ -49,8 +49,11 @@ neighbor count. `ME` uses `prediction - observation`.
 Attach the same inputs used by the original eight FS notebooks:
 
 1. `manaschaiaonon/hstack1024-pipeline-libs`;
-2. `plenoi/ar-er-gr-pr`; and
-3. the reproduce-00 split output for the notebook's receptor.
+2. `plenoi/ar-er-gr-pr`.
+
+The notebooks recreate the locked deterministic 60/20/20 split directly from
+the raw receptor CSV. Reproduce-00 `*_split_*.scl` files and split manifests are
+not required and are never consumed.
 
 The AD runtime is included under
 `materials/hstack1024-fs-extension/src/ad_test_regression` and is loaded from

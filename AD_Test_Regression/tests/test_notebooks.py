@@ -28,6 +28,9 @@ class NotebookContractTests(unittest.TestCase):
                 self.assertIn("AD_Test_Regression", source)
                 self.assertIn('FS_SRC / "ad_test_regression" / "pipeline.py"', source)
                 self.assertNotIn('EXTENSION_ROOT / "AD_Test_Regression"', source)
+                self.assertNotIn("discover_split_paths", source)
+                self.assertNotIn("split_paths_by_dataset", source)
+                self.assertNotIn("SPLIT_ROOT", source)
                 self.assertNotIn("RUN_DATASET = 'ALL'", source)
                 for cell in notebook["cells"]:
                     if cell["cell_type"] == "code":

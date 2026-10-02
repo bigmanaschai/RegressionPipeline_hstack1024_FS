@@ -61,7 +61,6 @@ GITHUB_REF = "main"    # branch, tag, or commit available to git clone
 PROJECT_ROOT_OVERRIDE = ""  # existing checkout; takes priority over clone
 BASE_ROOT_OVERRIDE = ""     # blank = standard Kaggle base-library path
 FS_ROOT_OVERRIDE = ""       # blank = materials in the GitHub checkout
-SPLIT_ROOT = "/kaggle/input"
 OUTPUT_ROOT_OVERRIDE = ""
 
 assert RUN_DATASET in {{"AR", "ER", "GR", "PR"}}
@@ -112,7 +111,6 @@ output_paths = run_test_ad_variant(
     fs_root=FS_ROOT,
     repo_root=PROJECT_ROOT,
     raw_csv=raw_csv_paths[RUN_DATASET],
-    split_paths=split_paths_by_dataset[RUN_DATASET],
     threshold_multipliers=AD_THRESHOLD_MULTIPLIERS,
     k_values=AD_NEIGHBOR_K_VALUES,
     tolerance=TOLERANCE,
@@ -123,6 +121,42 @@ for multiplier, output_path in output_paths.items():
     frame = pd.read_csv(output_path)
     print(f"threshold multiplier={multiplier}: {output_path}")
     display(frame)
+'''
+
+
+def _preflight_cell() -> str:
+    return '''# Preflight raw data, deep checkpoints, frozen final model, and reference table.
+from hstack1024_pipeline.config import FAMILY_ORDER, checkpoint_path, fingerprint_transformer_path, raw_csv_path
+from hstack1024_fs_pipeline.config import bundle_path, get_variant, reference_path
+
+raw_csv_paths = {RUN_DATASET: raw_csv_path(RUN_DATASET, BASE_ROOT)}
+raw_source = raw_csv_paths[RUN_DATASET]
+if not raw_source.is_file():
+    raise FileNotFoundError(
+        f"Raw regression CSV not found: {raw_source}. Attach plenoi/ar-er-gr-pr."
+    )
+for family in FAMILY_ORDER:
+    checkpoint = checkpoint_path(RUN_DATASET, family, BASE_ROOT)
+    if not checkpoint.is_file():
+        raise FileNotFoundError(checkpoint)
+fingerprint_transformer = fingerprint_transformer_path(RUN_DATASET, BASE_ROOT)
+if not fingerprint_transformer.is_file():
+    raise FileNotFoundError(fingerprint_transformer)
+
+spec = get_variant(RUN_DATASET, RUN_METHOD)
+final_bundle = bundle_path(RUN_DATASET, RUN_METHOD, fs_root=FS_ROOT)
+reference_table = reference_path(RUN_DATASET, RUN_METHOD, fs_root=FS_ROOT)
+if not final_bundle.is_file():
+    raise FileNotFoundError(final_bundle)
+if not reference_table.is_file():
+    raise FileNotFoundError(reference_table)
+print(
+    "Selected variant:", spec.variant_id,
+    f"Model={spec.model_class}", f"FS_k={spec.selected_k}",
+    f"Reference_Test_R2={spec.reference_test_r2:.12f}",
+)
+print("Raw-derived split: enabled; reproduce-00 split files are not required")
+print("Preflight: OK")
 '''
 
 
@@ -161,7 +195,7 @@ def build_notebook(sequence: str, dataset: str, method: str) -> Path:
         copy.deepcopy(template["cells"][4]),
         copy.deepcopy(template["cells"][5]),
         _code(_ad_import_cell()),
-        copy.deepcopy(template["cells"][6]),
+        _code(_preflight_cell()),
         _code(_run_cell()),
         _markdown(
             "## Output interpretation\n\n"
