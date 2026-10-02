@@ -34,6 +34,8 @@ class MaterialBundleTest(unittest.TestCase):
         self.assertEqual(len([p for p in recorded["files"] if p.startswith("references/")]), 8)
         self.assertIn("models/AR_pearson_bundle.json", recorded["files"])
         self.assertIn("SELECTIONS.json", recorded["files"])
+        self.assertIn("src/ad_test_regression/__init__.py", recorded["files"])
+        self.assertIn("src/ad_test_regression/pipeline.py", recorded["files"])
         self.assertIn("base_src/hstack1024_pipeline/__init__.py", recorded["files"])
         self.assertIn("base_src/hstack1024_pipeline/pipeline.py", recorded["files"])
         self.assertLess(sum(item["bytes"] for item in recorded["files"].values()), 2_000_000)

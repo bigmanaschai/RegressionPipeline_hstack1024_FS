@@ -14,6 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 REPO_ROOT = ROOT.parents[1]
 BASE_SRC = ROOT.parent / "frozen_hstack1024_ridge" / "src"
+AD_SRC = ROOT / "AD_Test_Regression" / "src"
 sys.path[:0] = [str(ROOT / "src"), str(BASE_SRC)]
 
 from hstack1024_fs_pipeline.config import all_variants, original_result_dir  # noqa: E402
@@ -186,6 +187,14 @@ def source_tree_files() -> dict[Path, Path]:
     }
 
 
+def ad_source_tree_files() -> dict[Path, Path]:
+    """Bundle the Test-regression AD runtime beside the verified FS runtime."""
+    return {
+        Path("src") / path.relative_to(AD_SRC): path
+        for path in sorted(AD_SRC.rglob("*.py"))
+    }
+
+
 def base_source_tree_files() -> dict[Path, Path]:
     """Vendor the small, exact base runtime; large artifacts remain in Kaggle Input."""
     return {
@@ -249,7 +258,12 @@ def contract_payload() -> dict:
 
 
 def expected_manifest() -> dict:
-    sources = {**artifact_sources(), **source_tree_files(), **base_source_tree_files()}
+    sources = {
+        **artifact_sources(),
+        **source_tree_files(),
+        **ad_source_tree_files(),
+        **base_source_tree_files(),
+    }
     generated = generated_materials()
     return {
         "material_slug": "hstack1024-fs-extension",
@@ -277,7 +291,12 @@ def expected_manifest() -> dict:
 
 def build() -> None:
     DESTINATION.mkdir(parents=True, exist_ok=True)
-    sources = {**artifact_sources(), **source_tree_files(), **base_source_tree_files()}
+    sources = {
+        **artifact_sources(),
+        **source_tree_files(),
+        **ad_source_tree_files(),
+        **base_source_tree_files(),
+    }
     for relative, source in sources.items():
         target = DESTINATION / relative
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -299,7 +318,7 @@ def build() -> None:
     )
     (DESTINATION / "README.txt").write_text(
         "HStack1024 SelectKBest extension materials (8 frozen final pipelines).\n"
-        "Contains: exact base/FS/OOD runtime source, 8 frozen final bundles, 8 reference tables.\n"
+        "Contains: exact base/FS/OOD/Test-AD runtime source, 8 frozen final bundles, 8 reference tables.\n"
         "Does not contain precomputed sample features or the 4.1 GB deep-feature assets.\n"
         "Standard replay requires the base library, raw AR/ER/GR/PR CSV input, "
         "and the four reproduce-00 split-oracle outputs.\n"

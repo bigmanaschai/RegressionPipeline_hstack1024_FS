@@ -103,6 +103,14 @@
       "sha256": "997ab68f2e02832e25cee41b0b1c0efa577f85a481373804c33603f906423dab",
       "bytes": 16283
     },
+    "src/ad_test_regression/__init__.py": {
+      "sha256": "ba24fe843587a510a872b5d386468be4b1ecfa498c002ebca34ca92ff1a40a93",
+      "bytes": 160
+    },
+    "src/ad_test_regression/pipeline.py": {
+      "sha256": "3b5f8cca01fc0789ad4f4064430e2271e61a741b9489cc39608d62bb3fbde57d",
+      "bytes": 12849
+    },
     "base_src/hstack1024_pipeline/__init__.py": {
       "sha256": "6bd46575867c341810e774dabd9ef1d3f7e72550b9a9a6a455981e4fe5baf655",
       "bytes": 276
