@@ -81,12 +81,14 @@ not required and are never consumed. Attach Kaggle inputs that contain the raw
 CSV, frozen deep checkpoints and ECFP transformer, and the selected variant's
 frozen final artifacts.
 
-Split validation is row-order independent. Some `scikit-learn`/NumPy versions
-return the same stratified members in a different order. Every notebook still
-checks the exact SMILES membership, every SMILES-target pair, split sizes,
-cross-split disjointness, and complete coverage of the cleaned dataset. A mere
-row permutation therefore does not stop the run, while any changed molecule,
-target, pairing, leakage, or missing row still raises an error.
+Split validation is row-order and equivalent-SMILES-text independent. Some
+`scikit-learn`/NumPy versions return the same stratified members in a different
+order, and one molecule can have multiple equivalent SMILES strings. Every
+notebook therefore checks canonical molecule membership, every canonical
+SMILES-target pair, split sizes, cross-split disjointness, and complete coverage
+of the RDKit-cleaned dataset. A mere row permutation or equivalent SMILES
+serialization does not stop the run, while any changed molecule, target,
+pairing, leakage, or missing row still raises an error.
 
 ## Cell sequence
 

@@ -48,13 +48,14 @@ class NotebookContractTests(unittest.TestCase):
                 self.assertIn("def extract_graph", source)
                 self.assertIn("def extract_fingerprint", source)
                 self.assertIn("def regression_metrics", source)
-                self.assertIn("EXPECTED_UNORDERED_SMILES_HASHES", source)
-                self.assertIn("EXPECTED_PAIRED_HASHES", source)
-                self.assertIn("def unordered_smiles_target_hash", source)
+                self.assertIn("EXPECTED_CANONICAL_SMILES_HASHES", source)
+                self.assertIn("EXPECTED_CANONICAL_PAIRED_HASHES", source)
+                self.assertIn("def unordered_canonical_smiles_target_hash", source)
                 self.assertIn("Split identity verified without requiring version-specific row order.", source)
                 self.assertIn("Train/validation SMILES leakage detected", source)
                 self.assertIn("Split union does not reproduce the cleaned dataset", source)
                 self.assertNotIn("EXPECTED_ORDERED_HASHES", source)
+                self.assertNotIn("EXPECTED_UNORDERED_SMILES_HASHES", source)
                 self.assertNotIn("ordered SMILES identity changed", source)
                 self.assertNotIn("git clone", source)
                 self.assertNotIn("GITHUB_REPO_URL", source)
@@ -64,6 +65,15 @@ class NotebookContractTests(unittest.TestCase):
                 self.assertNotIn("split_paths_by_dataset", source)
                 self.assertNotIn("SPLIT_ROOT", source)
                 self.assertNotIn("RUN_DATASET = 'ALL'", source)
+                if "_ER_" in path.name:
+                    self.assertIn(
+                        "56efcf1f07d653965f3236a04d3fb5c6255bda9e58f28ff6b4f2fcc89f249fe0",
+                        source,
+                    )
+                    self.assertNotIn(
+                        "c80d9043e5beffdaa27cd57cfaad57407c9c698e98bae58bccaa16655bbfbb1a",
+                        source,
+                    )
                 for cell in notebook["cells"]:
                     if cell["cell_type"] == "code":
                         self.assertIsNone(cell.get("execution_count"))

@@ -26,12 +26,12 @@ DATASET_CONTRACTS = {
             "val": "0c26403acd5ad627",
             "test": "45de4d5c02af07cf",
         },
-        "unordered_smiles_hashes": {
+        "canonical_smiles_hashes": {
             "train": "3f94b98eaf5385700121212b7021730e42a33a62835e4c797461be96006539d5",
             "val": "7c16a541e552f5b98826667fcc4f5d5ffef90de696ae7c22a483290753daad40",
             "test": "cdd75f3a2a0467568b6b343953671718e50b189282918199a81ed94fed2bba6c",
         },
-        "paired_hashes": {
+        "canonical_paired_hashes": {
             "train": "7a463c40c615ff782874cec00261a0e7b34dd8bd6869b2b91b95fbdfb46a784f",
             "val": "ba22efa20aa1d39f2d50dd677e35d00973609760df510ca73e9cb12e821e110a",
             "test": "430201a28be3bb3aa6ef72f7175da2d2eb75d5fbba39acd31fcd924b32cb1a84",
@@ -46,15 +46,15 @@ DATASET_CONTRACTS = {
             "val": "d3755b70a1815d8e",
             "test": "da4fc0c0979e2788",
         },
-        "unordered_smiles_hashes": {
-            "train": "c80d9043e5beffdaa27cd57cfaad57407c9c698e98bae58bccaa16655bbfbb1a",
-            "val": "bf061393a38a029c5c658ded106f445a7edeed61240329586d6448169dadf1d3",
-            "test": "2038b3153e06af93cdbb7fb450d78a24369ce3ccbe95b473fdd8f6b1af5676e9",
+        "canonical_smiles_hashes": {
+            "train": "56efcf1f07d653965f3236a04d3fb5c6255bda9e58f28ff6b4f2fcc89f249fe0",
+            "val": "d5c427347d86eae1079a59f981b7eba5d855581d5a90d34aed5bd613d0458557",
+            "test": "ee8a8870dc935bb759bb73b1e18ecb21af3b6c867fbb5a82f8a3dfb1c86bbf47",
         },
-        "paired_hashes": {
-            "train": "a3e7f3f4cac43c2a1b8415a52ba8b9b13dd4c9355494affdc1b4616ed0bc168a",
-            "val": "ad0c118e9e7fcdaadceffac716e3de2c6effd91185cb757c99dbcae43b6dfa28",
-            "test": "828d0f923e2f8bd32dc106c4d3e497c20537f748b92907226395e48344844d43",
+        "canonical_paired_hashes": {
+            "train": "a30b7fe1f561a2fca7c0191b8be498b9e5979904c0c19cbd30ee24129a54f317",
+            "val": "f7a809e3e176434ba3352e31efa36f3976d7aae44e203b4ddb7293db31ef61c3",
+            "test": "c7641fa54b7889bfa905ae9338bec32ddeb209d401e74fcc6673b7e40950b2da",
         },
     },
     "GR": {
@@ -62,12 +62,12 @@ DATASET_CONTRACTS = {
         "n_val": 327,
         "n_test": 328,
         "canonical_hashes": {},
-        "unordered_smiles_hashes": {
+        "canonical_smiles_hashes": {
             "train": "4b69da7f4fac25e9d251f38136022e44143975a0c20c6652e77e0498fb076492",
             "val": "0af3bab48d9bd5865eabc3a8fb9dc20d0412b9f0b6beb4e616ef7d88e1d6f251",
             "test": "e73fd2bd0b5fc60a27380396b42370c73b3083ac0ac54329b077c04b38e845f9",
         },
-        "paired_hashes": {
+        "canonical_paired_hashes": {
             "train": "c7e78e1e6ba4e1a4be1a3411c5f07351d415c62d73d708b9dc9dc7a5fc462cf4",
             "val": "d38eb41bdcfffd6b49e6002e85f21ab51294eeced8fe089416de6037cab68435",
             "test": "5f4afef9c3e9270728a4543b52776b7ae901dd7db549bb7f7f128c662f623be0",
@@ -78,12 +78,12 @@ DATASET_CONTRACTS = {
         "n_val": 271,
         "n_test": 272,
         "canonical_hashes": {},
-        "unordered_smiles_hashes": {
+        "canonical_smiles_hashes": {
             "train": "1db2fa90a7e84d011fbda3623e280eaae8bb61f246499a1c62f7c949bfd4fc1c",
             "val": "446ee3ed481e403f85294d9eb103b64341b4c02171ef2add1d90fbedea184be5",
             "test": "e8df6d492f25d1a36d6789960a3f0d513af02fd2c9e86f1c09b3bc9c9aa19d0d",
         },
-        "paired_hashes": {
+        "canonical_paired_hashes": {
             "train": "788159e020d538c59a58b1cb5d9865e61628b2e5436641ea48c1d2de097a9e22",
             "val": "cf60570e6219799ea413e2fd2a23988a9a98bfcc1cc3ab38486ef9e4591f9128",
             "test": "10df9cb17ea5bd862c70580d20fab3eab05389a8581310f58aeeaef8ab366937",
@@ -179,8 +179,8 @@ AUTO_INSTALL_MISSING_DEPENDENCIES = True
 SKFP_INSTALL_SPEC = "git+https://github.com/plenoi/scikit-finger-plenoi.git@master"
 
 EXPECTED_CANONICAL_HASHES = {contract["canonical_hashes"]!r}
-EXPECTED_UNORDERED_SMILES_HASHES = {contract["unordered_smiles_hashes"]!r}
-EXPECTED_PAIRED_HASHES = {contract["paired_hashes"]!r}
+EXPECTED_CANONICAL_SMILES_HASHES = {contract["canonical_smiles_hashes"]!r}
+EXPECTED_CANONICAL_PAIRED_HASHES = {contract["canonical_paired_hashes"]!r}
 
 assert RUN_DATASET in {{"AR", "ER", "GR", "PR"}}
 assert RUN_METHOD in {{"mutual_info", "pearson"}}
@@ -494,13 +494,13 @@ from sklearn.model_selection import train_test_split
 
 RDLogger.DisableLog("rdApp.*")
 
-def unordered_smiles_hash(values):
-    """Hash exact SMILES membership without depending on sklearn row order."""
+def unordered_canonical_smiles_hash(values):
+    """Hash canonical molecule membership without depending on row order."""
     ordered_values = sorted(str(value) for value in values)
     return hashlib.sha256("\n".join(ordered_values).encode("utf-8")).hexdigest()
 
-def unordered_smiles_target_hash(smiles_values, target_values):
-    """Hash paired SMILES/target records while ignoring only record order."""
+def unordered_canonical_smiles_target_hash(smiles_values, target_values):
+    """Hash canonical-SMILES/target pairs while ignoring only row order."""
     if len(smiles_values) != len(target_values):
         raise AssertionError("SMILES/target length mismatch")
     records = sorted(
@@ -510,9 +510,9 @@ def unordered_smiles_target_hash(smiles_values, target_values):
     payload = "\n".join(f"{smiles}\t{target_hex}" for smiles, target_hex in records)
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
-def canonical_split_hash(smiles):
-    canonical = sorted(Chem.MolToSmiles(Chem.MolFromSmiles(str(value))) for value in smiles)
-    return hashlib.md5("\n".join(canonical).encode("utf-8")).hexdigest()[:16]
+def canonical_split_hash(canonical_smiles):
+    ordered_values = sorted(str(value) for value in canonical_smiles)
+    return hashlib.md5("\n".join(ordered_values).encode("utf-8")).hexdigest()[:16]
 
 raw_frame = pd.read_csv(INPUT_PATHS["raw_csv"])
 required_columns = {"Smiles", "pIC50"}
@@ -527,6 +527,10 @@ clean_frame = raw_frame.loc[valid_smiles_mask].drop_duplicates(subset=["Smiles"]
 clean_frame = clean_frame.loc[~np.isinf(clean_frame["pIC50"].to_numpy())].copy()
 smiles = clean_frame["Smiles"].to_numpy().astype(str)
 targets = clean_frame["pIC50"].to_numpy(dtype=float)
+canonical_smiles = np.asarray([
+    Chem.MolToSmiles(Chem.MolFromSmiles(value)) for value in smiles
+]).astype(str)
+canonical_by_raw_smiles = dict(zip(smiles.tolist(), canonical_smiles.tolist()))
 
 bins = pd.qcut(targets, q=10, labels=False, duplicates="drop")
 train_smiles, temp_smiles, train_y, temp_y, _, temp_bins = train_test_split(
@@ -540,6 +544,10 @@ splits = {
     "val": {"smiles": np.asarray(val_smiles).astype(str), "y": np.asarray(val_y, dtype=float)},
     "test": {"smiles": np.asarray(test_smiles).astype(str), "y": np.asarray(test_y, dtype=float)},
 }
+for payload in splits.values():
+    payload["canonical_smiles"] = np.asarray([
+        canonical_by_raw_smiles[value] for value in payload["smiles"]
+    ]).astype(str)
 
 if len(val_y) != EXPECTED_N_VAL or len(test_y) != EXPECTED_N_TEST:
     raise AssertionError(
@@ -548,50 +556,53 @@ if len(val_y) != EXPECTED_N_VAL or len(test_y) != EXPECTED_N_TEST:
     )
 
 # train_test_split can return the same stratified membership in a different row
-# order across sklearn/NumPy versions. Validate exact split membership and every
-# SMILES-target pairing, but deliberately do not require a particular row order.
+# order across sklearn/NumPy versions. Validate canonical molecule membership
+# and every canonical-SMILES/target pairing, but do not require a row order or
+# one particular equivalent textual representation of a SMILES molecule.
 split_smiles_sets = {
-    split_name: set(payload["smiles"].tolist())
+    split_name: set(payload["canonical_smiles"].tolist())
     for split_name, payload in splits.items()
 }
 for split_name, payload in splits.items():
-    if len(split_smiles_sets[split_name]) != len(payload["smiles"]):
-        raise AssertionError(f"{split_name} contains duplicate SMILES")
+    if len(split_smiles_sets[split_name]) != len(payload["canonical_smiles"]):
+        raise AssertionError(f"{split_name} contains duplicate canonical molecules")
 if split_smiles_sets["train"] & split_smiles_sets["val"]:
     raise AssertionError("Train/validation SMILES leakage detected")
 if split_smiles_sets["train"] & split_smiles_sets["test"]:
     raise AssertionError("Train/test SMILES leakage detected")
 if split_smiles_sets["val"] & split_smiles_sets["test"]:
     raise AssertionError("Validation/test SMILES leakage detected")
-if set().union(*split_smiles_sets.values()) != set(smiles.tolist()):
+if set().union(*split_smiles_sets.values()) != set(canonical_smiles.tolist()):
     raise AssertionError("Split union does not reproduce the cleaned dataset")
 
 for split_name, expected in EXPECTED_CANONICAL_HASHES.items():
-    actual = canonical_split_hash(splits[split_name]["smiles"])
+    actual = canonical_split_hash(splits[split_name]["canonical_smiles"])
     if actual != expected:
         raise AssertionError(f"{split_name} canonical hash changed: {actual} != {expected}")
 
 split_identity_audit = []
 for split_name in ("train", "val", "test"):
     payload = splits[split_name]
-    actual_smiles_hash = unordered_smiles_hash(payload["smiles"])
-    actual_pair_hash = unordered_smiles_target_hash(payload["smiles"], payload["y"])
-    if actual_smiles_hash != EXPECTED_UNORDERED_SMILES_HASHES[split_name]:
+    actual_smiles_hash = unordered_canonical_smiles_hash(payload["canonical_smiles"])
+    actual_pair_hash = unordered_canonical_smiles_target_hash(
+        payload["canonical_smiles"], payload["y"]
+    )
+    if actual_smiles_hash != EXPECTED_CANONICAL_SMILES_HASHES[split_name]:
         raise AssertionError(
-            f"{split_name} SMILES membership changed: "
-            f"{actual_smiles_hash} != {EXPECTED_UNORDERED_SMILES_HASHES[split_name]}"
+            f"{split_name} canonical molecule membership changed: "
+            f"{actual_smiles_hash} != {EXPECTED_CANONICAL_SMILES_HASHES[split_name]}"
         )
-    if actual_pair_hash != EXPECTED_PAIRED_HASHES[split_name]:
+    if actual_pair_hash != EXPECTED_CANONICAL_PAIRED_HASHES[split_name]:
         raise AssertionError(
-            f"{split_name} SMILES-target pairing changed: "
-            f"{actual_pair_hash} != {EXPECTED_PAIRED_HASHES[split_name]}"
+            f"{split_name} canonical-SMILES/target pairing changed: "
+            f"{actual_pair_hash} != {EXPECTED_CANONICAL_PAIRED_HASHES[split_name]}"
         )
     split_identity_audit.append({
         "Split": split_name,
         "Rows": len(payload["y"]),
-        "Unique_SMILES": len(split_smiles_sets[split_name]),
-        "Membership_hash": actual_smiles_hash,
-        "SMILES_target_pair_hash": actual_pair_hash,
+        "Unique_Canonical_Molecules": len(split_smiles_sets[split_name]),
+        "Canonical_membership_hash": actual_smiles_hash,
+        "Canonical_SMILES_target_pair_hash": actual_pair_hash,
     })
 
 raw_split_path = ARTIFACT_DIR / "01_raw_splits.npz"
@@ -600,6 +611,9 @@ np.savez_compressed(
     train_smiles=splits["train"]["smiles"], train_y=splits["train"]["y"],
     val_smiles=splits["val"]["smiles"], val_y=splits["val"]["y"],
     test_smiles=splits["test"]["smiles"], test_y=splits["test"]["y"],
+    train_canonical_smiles=splits["train"]["canonical_smiles"],
+    val_canonical_smiles=splits["val"]["canonical_smiles"],
+    test_canonical_smiles=splits["test"]["canonical_smiles"],
 )
 
 print("Raw rows:", len(raw_frame))
